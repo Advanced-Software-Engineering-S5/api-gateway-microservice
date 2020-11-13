@@ -1,0 +1,12 @@
+[submodule "user-microservice"]
+	path = user-microservice
+	url = git@github.com:Advanced-Software-Engineering-S5/user-microservice.git
+[submodule "restaurant-microservice"]
+	path = restaurant-microservice
+	url = git@github.com:Advanced-Software-Engineering-S5/restaurant-microservice.git
+[submodule "reservation-microservice"]
+	path = reservation-microservice
+	url = git@github.com:Advanced-Software-Engineering-S5/reservation-microservice.git
+[submodule "notification-microservice"]
+	path = notification-microservice
+	url = git@github.com:Advanced-Software-Engineering-S5/notification-microservice.git
