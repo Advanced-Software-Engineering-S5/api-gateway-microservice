@@ -2,15 +2,19 @@
 	path = microservices/user_microservice
 	url = git@github.com:Advanced-Software-Engineering-S5/user-microservice.git
 	branch = main
+	update = merge
 [submodule "restaurant-microservice"]
 	path = microservices/restaurant_microservice
 	url = git@github.com:Advanced-Software-Engineering-S5/restaurant-microservice.git
 	branch = main
+	update = merge
 [submodule "reservation-microservice"]
 	path = microservices/reservation_microservice
 	url = git@github.com:Advanced-Software-Engineering-S5/reservation-microservice.git
 	branch = main
+	update = merge
 [submodule "notification-microservice"]
 	path = microservices/notification_microservice
 	url = git@github.com:Advanced-Software-Engineering-S5/notification-microservice.git
 	branch = main
+	update = merge
