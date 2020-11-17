@@ -1,0 +1,58 @@
+version: '3.8'
+services:
+  restaurant:
+    build: ./microservices/restaurant_microservice
+    container_name: restaurant-gooutsafe
+    ports:
+      - "5030:5000"
+    environment:
+      - FLASK_APP=./restaurant_microservice/app.py
+    volumes:
+        - ./microservices/restaurant_microservice:/app
+    command: sh -c 'cd /app && pip install -r requirements.txt && flask run'
+  notification:
+    build: ./microservices/notification_microservice
+    container_name: notification-gooutsafe
+    ports:
+      - "5020:5000"
+    volumes:
+        - ./microservices/notification_microservice:/app
+    environment:
+      - FLASK_APP=./notification_microservice/app.py
+    command: sh -c 'cd /app && pip install -r requirements.txt && flask run'
+  user:
+    build: ./microservices/user_microservice
+    container_name: user-gooutsafe
+    ports:
+      - "6000:5000"
+    volumes:
+        - ./microservices/user_microservice:/app
+    environment:
+      - FLASK_APP=./user_microservice/app.py
+    command: sh -c 'cd /app && pip install -r requirements.txt && flask run'
+  reservation:
+    build: ./microservices/reservation_microservice
+    container_name: reservation-gooutsafe
+    ports:
+      - "6020:5000"
+    volumes:
+        - ./microservices/reservation_microservice:/app
+    environment:
+      - FLASK_APP=./reservation_microservice/app.py
+    command: sh -c 'cd /app && pip install -r requirements.txt && flask run'
+  api-gateway:
+    build: .
+    container_name: api-gateway-gooutsafe
+    ports:
+      - "5000:5000"
+    volumes:
+        - .:/app
+    environment:
+      - FLASK_APP=./api_gateway/app.py
+      - FLASK_RUN_HOST=0.0.0.0
+    command: sh -c 'cd /app && pip install -r requirements.txt && flask run'
+  redis:
+    image: "redis"
+    container_name: redis-gooutsafe
+    ports:
+      - "6379:6379"
