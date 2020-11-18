@@ -7,6 +7,8 @@ services:
       - "5030:5000"
     environment:
       - FLASK_APP=./restaurant_microservice/app.py
+    env_file:
+      - "${DEPLOY_MODE}.env"
     volumes:
         - ./microservices/restaurant_microservice:/app
     command: sh -c 'cd /app && pip install -r requirements.txt && flask run'
@@ -19,6 +21,8 @@ services:
         - ./microservices/notification_microservice:/app
     environment:
       - FLASK_APP=./notification_microservice/app.py
+    env_file:
+      - "${DEPLOY_MODE}.env"
     command: sh -c 'cd /app && pip install -r requirements.txt && flask run'
   user:
     build: ./microservices/user_microservice
@@ -29,6 +33,8 @@ services:
         - ./microservices/user_microservice:/app
     environment:
       - FLASK_APP=./user_microservice/app.py
+    env_file:
+      - "${DEPLOY_MODE}.env"
     command: sh -c 'cd /app && pip install -r requirements.txt && flask run'
   reservation:
     build: ./microservices/reservation_microservice
@@ -39,6 +45,8 @@ services:
         - ./microservices/reservation_microservice:/app
     environment:
       - FLASK_APP=./reservation_microservice/app.py
+    env_file:
+      - "${DEPLOY_MODE}.env"
     command: sh -c 'cd /app && pip install -r requirements.txt && flask run'
   api-gateway:
     build: .
@@ -50,6 +58,8 @@ services:
     environment:
       - FLASK_APP=./api_gateway/app.py
       - FLASK_RUN_HOST=0.0.0.0
+    env_file:
+      - "${DEPLOY_MODE}.env"
     command: sh -c 'cd /app && pip install -r requirements.txt && flask run'
   redis:
     image: "redis"
