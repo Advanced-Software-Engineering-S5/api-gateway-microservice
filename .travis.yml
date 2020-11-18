@@ -1,0 +1,20 @@
+language: python
+python: 3.8
+services:
+  - docker
+# env:
+#   - DOCKER_COMPOSE_VERSION=1.27.4
+before_install:
+  - export DEPLOY_MODE=development
+  - docker-compose up -d
+install:
+  - pip install -r requirements.txt
+before_script:
+  - . ./set_dev_env.sh
+  # - rm -f monolith/gooutsafe.db
+  # - bash start_celery.sh > celery_logs.txt 2>&1 &
+script:
+  - python -m pytest --cov-report term-missing --cov=api_gateway api_gateway/tests/
+after_script:
+  - docker-compose logs
+  - docker-compose down
