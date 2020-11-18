@@ -11,6 +11,7 @@ services:
       - "${DEPLOY_MODE}.env"
     volumes:
         - ./microservices/restaurant_microservice:/app
+    restart: unless-stopped
     command: sh -c 'cd /app && pip install -r requirements.txt && flask run'
   notification:
     build: ./microservices/notification_microservice
@@ -24,6 +25,7 @@ services:
     env_file:
       - "${DEPLOY_MODE}.env"
     command: sh -c 'cd /app && pip install -r requirements.txt && flask run'
+    restart: unless-stopped
   user:
     build: ./microservices/user_microservice
     container_name: user-gooutsafe
@@ -36,6 +38,7 @@ services:
     env_file:
       - "${DEPLOY_MODE}.env"
     command: sh -c 'cd /app && pip install -r requirements.txt && flask run'
+    restart: unless-stopped
   reservation:
     build: ./microservices/reservation_microservice
     container_name: reservation-gooutsafe
@@ -48,6 +51,7 @@ services:
     env_file:
       - "${DEPLOY_MODE}.env"
     command: sh -c 'cd /app && pip install -r requirements.txt && flask run'
+    restart: unless-stopped
   api-gateway:
     build: .
     container_name: api-gateway-gooutsafe
@@ -61,8 +65,10 @@ services:
     env_file:
       - "${DEPLOY_MODE}.env"
     command: sh -c 'cd /app && pip install -r requirements.txt && flask run'
+    restart: unless-stopped
   redis:
     image: "redis"
     container_name: redis-gooutsafe
     ports:
       - "6379:6379"
+    restart: unless-stopped
