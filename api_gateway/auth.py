@@ -15,7 +15,9 @@ def unauthorized(error_description):
 @jwt_manager.user_loader_callback_loader
 def loader(user_id):
     if not currently_logged_in.get(str(user_id)):
-        currently_logged_in[str(user_id)] = User.get(id=user_id)
+        user = User.get(id=user_id)
+        user.is_authorized = True
+        currently_logged_in[str(user_id)] = user
     return currently_logged_in.get(str(user_id))
 
 

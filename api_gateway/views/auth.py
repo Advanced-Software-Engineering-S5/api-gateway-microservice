@@ -14,6 +14,7 @@ def login():
         user_id = decode_token(jwt_token.json())['identity']
         user = User.get(id=user_id)
         user.is_authorized = True
+        currently_logged_in[str(user_id)] = user
         set_access_cookies(resp, jwt_token.json())
         resp.status_code = 200
     else:
