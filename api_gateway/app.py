@@ -1,6 +1,8 @@
 # from database import Restaurant
 import connexion, logging
-from database import db
+from api_gateway.database import db
+from api_gateway.views import blueprints
+
 
 db_session = None
 def get_notifications(user_id):
@@ -22,6 +24,10 @@ def create_app(dbfile='sqlite:///notification_gooutsafe.db'):
     # celery config
     app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379'
     app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379'
+
+    for bp in blueprints:
+        app.register_blueprint(bp)
+        bp.app = app
 
     db.init_app(app)
     db.create_all(app=app)

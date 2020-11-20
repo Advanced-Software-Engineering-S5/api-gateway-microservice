@@ -30,7 +30,7 @@ celery = make_celery(create_app())
 #     global _APP
 #     # lazy init
 #     if _APP is None:
-#         from monolith.app import create_app
+#         from api_gateway.app import create_app
 #         app = create_app()
 #         db.init_app(app)
 #     else:
