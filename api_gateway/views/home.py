@@ -1,7 +1,7 @@
 from flask import Blueprint, redirect, render_template, current_app
 
 from api_gateway.database import Restaurant
-# from api_gateway.auth import current_user
+from api_gateway.auth import current_user
 # from api_gateway.classes.notification_retrieval import fetch_notifications
 
 

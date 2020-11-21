@@ -1,11 +1,9 @@
+from api_gateway.forms import RatingForm, ReservationForm, RestaurantProfileEditForm
+from api_gateway.classes.restaurant import Restaurant, RestaurantTable, Review
 from logging import error
 from api_gateway.classes.exceptions import GoOutSafeError
-import api_gateway.classes.customer_reservations as cr
 from flask import Blueprint, redirect, render_template, request, flash
-from api_gateway.database import Reservation, db, Restaurant, Review, RestaurantTable
-# from api_gateway.auth import admin_required, current_user
-from flask_login import (current_user, login_user, logout_user,
-                         login_required)
+from api_gateway.auth import admin_required, current_user, login_required
 from sqlalchemy import func
 from datetime import datetime
 
@@ -14,7 +12,7 @@ restaurants = Blueprint('restaurants', __name__)
 
 @restaurants.route('/restaurants')
 def _restaurants(message=''):
-    allrestaurants = db.session.query(Restaurant)
+    allrestaurants = Restaurant.getAll()
     return render_template("restaurants.html",
                            message=message,
                            restaurants=allrestaurants,
@@ -24,15 +22,15 @@ def _restaurants(message=''):
 @restaurants.route('/restaurants/<restaurant_id>',
                    methods=['GET', 'POST'])
 def restaurant_sheet(restaurant_id):
-    record = Restaurant.query.get(restaurant_id)
+    record = Restaurant.get(restaurant_id)
     if not record:
         return render_template("error.html", error_message="The page you're looking does not exists")
     if not current_user.is_authenticated:
         return render_template("restaurantsheet.html", record=record)
-    review = Review.query.filter_by(reviewer_id=current_user.id, restaurant_id=restaurant_id).scalar()
+    review = Review.get(restaurant_id, current_user.id)
     if review is not None:
         # show the user their updated view
-        update_review(record, review.stars)
+        record.update_review(review.stars)
     if current_user.is_authenticated and not current_user.restaurant_id \
         and review is None:
         # the user is logged and hasn't already a review for this restaurant
@@ -40,11 +38,11 @@ def restaurant_sheet(restaurant_id):
         if(request.method == 'POST'):
             if form.validate_on_submit():
                 if form.review is not None:
-                    add_review(current_user.id, restaurant_id, int(request.form.get("stars_number")), text=str(form.review.data))                                        
+                    Review.add(restaurant_id, current_user.id, int(request.form.get("stars_number")), text=str(form.review.data))                                       
                 else:
-                    add_review(current_user.id, restaurant_id, int(request.form.get("stars_number")))
+                    Review.add(restaurant_id, current_user.id, int(request.form.get("stars_number"))) 
                 # update review count immediately so user can see it
-                record = update_review(record, int(request.form.get("stars_number")))
+                record.update_review(int(request.form.get("stars_number")))
         else:
             return render_template("restaurantsheet.html", form=form, record=record)
 
@@ -55,9 +53,9 @@ def restaurant_sheet(restaurant_id):
                    methods=['GET', 'POST'])
 # @login_required
 def _reserve(restaurant_id):
-    form = ReservationForm()
-    record = db.session.query(Restaurant).filter_by(
-        id=int(restaurant_id)).all()[0]
+    pass
+    """form = ReservationForm()
+    record = Restaurant.get(restaurant_id)
 
     if (request.method == 'POST'):
         if ReservationForm(request.form).validate_on_submit():
@@ -91,7 +89,7 @@ def _reserve(restaurant_id):
                 flash('Booking confirmed', 'booking')
                 return redirect('/restaurants')
 
-    return render_template('reserve.html', name=record.name, form=form)
+    return render_template('reserve.html', name=record.name, form=form)"""
 
 
 @restaurants.route('/restaurants/edit/<restaurant_id>', methods=['GET', 'POST'])
@@ -102,11 +100,11 @@ def _edit(restaurant_id):
     r = Restaurant.query.get(restaurant_id)
     form = RestaurantProfileEditForm(obj=r)
 
-    tables = RestaurantTable.query.filter_by(restaurant_id = restaurant_id).order_by(RestaurantTable.table_id.asc())
+    tables = RestaurantTable.get(r.id)
     
     if request.method == 'POST':
         try:
-            edit_restaurant(form, request.form, restaurant_id)
+            Restaurant.update(restaurant_id, request.form, phone=form.phone, extra_info=form.extra_info)
             return redirect('/restaurants/edit/' + restaurant_id)
         except GoOutSafeError as e:
             return render_template("restaurantedit.html", restaurant=r, form=form, tables=tables)
