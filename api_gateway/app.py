@@ -1,8 +1,7 @@
 # from database import Restaurant
-import connexion, logging
-from flask import request
-from flask_jwt_extended import JWTManager, decode_token
-from .database import db
+import logging
+from flask_jwt_extended import JWTManager
+from api_gateway.views import blueprints
 
 db_session = None
 
@@ -33,7 +32,9 @@ def create_app(dbfile='sqlite:///notification_gooutsafe.db'):
     # # celery config
     # app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379'
     # app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379'
-
+    for bp in blueprints:
+        app.register_blueprint(bp)
+        bp.app = app
     # db.init_app(app)
     # db.create_all(app=app)
 
