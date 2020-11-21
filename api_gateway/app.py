@@ -1,7 +1,8 @@
 # from database import Restaurant
-import logging
-from flask_jwt_extended import JWTManager
-from api_gateway.views import blueprints
+import connexion, logging
+from api_gateway.auth import jwt_manager
+from flask import request, make_response
+from .database import db
 
 db_session = None
 
@@ -15,7 +16,6 @@ def get_notification(user_id: int, notification_id):
 
 
 logging.basicConfig(level=logging.INFO)
-jwt_manager = JWTManager()
 
 
 def create_app(dbfile='sqlite:///notification_gooutsafe.db'):
@@ -27,6 +27,10 @@ def create_app(dbfile='sqlite:///notification_gooutsafe.db'):
     jwt_manager.init_app(app)
     # app.config['WTF_CSRF_SECRET_KEY'] = 'A SECRET KEY'
     app.config['JWT_SECRET_KEY'] = 'secret_key_bella_e_nascosta'
+    app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+    app.config['JWT_ACCESS_COOKIE_NAME'] = 'gooutsafe_jwt_token'
+    app.config['JWT_COOKIE_CSRF_PROTECT'] = True
+    app.config['JWT_CSRF_IN_COOKIES'] = True
     # app.config['SQLALCHEMY_DATABASE_URI'] = dbfile
     # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     # # celery config
