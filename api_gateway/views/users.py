@@ -27,7 +27,7 @@ def create_user():
             id = User.create(email=form.email.data, \
                 firstname=form.firstname.data, lastname=form.lastname.data, \
                 password=form.password.data, fiscal_code=form.fiscal_code.data, \
-                phone=form.phone.data, dateofbirth=dateofbirth)
+                phone=str(form.phone.data), dateofbirth=dateofbirth)
             u = User.get(id=id)
             login()
             return redirect('/')

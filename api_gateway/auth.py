@@ -1,6 +1,6 @@
 import functools
 from api_gateway.classes.user import User
-from flask_jwt_extended import jwt_required, JWTManager, current_user
+from flask_jwt_extended import jwt_required, JWTManager, current_user, jwt_optional
 
 jwt_manager = JWTManager()
 currently_logged_in = {}
@@ -16,9 +16,17 @@ def unauthorized(error_description):
 def loader(user_id):
     if not currently_logged_in.get(str(user_id)):
         user = User.get(id=user_id)
-        user.is_authorized = True
-        currently_logged_in[str(user_id)] = user
+        if user:
+            user.is_authenticated = True
+            currently_logged_in[str(user_id)] = user
+        else:
+            return {}
     return currently_logged_in.get(str(user_id))
+
+# flask_jwt_extended fai cacare
+@jwt_optional
+def user_loader_ctx_processor():
+    return dict(current_user=current_user)
 
 
 def admin_required(func):
