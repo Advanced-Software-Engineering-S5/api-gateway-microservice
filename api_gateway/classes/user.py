@@ -1,6 +1,6 @@
 import requests, json, os
 from dataclasses import dataclass, field, fields
-from datetime import datetime
+from datetime import date, datetime
 from typing import Optional
 
 
@@ -22,6 +22,7 @@ class User:
     """
 
     BASE_URL = f"http://{os.environ.get('GOS_USER')}"
+    # BASE_URL = "http://user:5000"
 
     id: int
     email: str
@@ -114,7 +115,7 @@ class User:
             'fiscal_code': fiscal_code,
             'phone': phone,
             'is_admin': is_admin,
-            'dateofbirth': dateofbirth.isoformat() if type(dateofbirth) == datetime else dateofbirth,
+            'dateofbirth': str(dateofbirth.isoformat()) if type(dateofbirth) == datetime else dateofbirth,
             'restaurant_id': restaurant_id
         }
 

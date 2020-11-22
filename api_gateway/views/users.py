@@ -1,3 +1,5 @@
+from api_gateway.views.auth import login
+from datetime import datetime
 from api_gateway.classes.restaurant import Restaurant
 from api_gateway.classes.exceptions import GoOutSafeError, FormValidationError
 from api_gateway.classes.user import User
@@ -21,8 +23,13 @@ def create_user():
     form = UserForm()
     if request.method == 'POST':
         try:
-            u = User.create(**form)
-            login_user(u)
+            dateofbirth = datetime(form.dateofbirth.data.year, form.dateofbirth.data.month, form.dateofbirth.data.day)
+            id = User.create(email=form.email.data, \
+                firstname=form.firstname.data, lastname=form.lastname.data, \
+                password=form.password.data, fiscal_code=form.fiscal_code.data, \
+                phone=form.phone.data, dateofbirth=dateofbirth)
+            u = User.get(id=id)
+            login()
             return redirect('/')
         except FormValidationError:
             return render_template('create_user.html', form=form)
@@ -37,7 +44,12 @@ def create_operator():
     form = OperatorForm()
     if request.method == 'POST':
         try:
-            u = Restaurant.create(**form)
+            dateofbirth = datetime(form.dateofbirth.data.year, form.dateofbirth.data.month, form.dateofbirth.data.day)
+            u = Restaurant.create(form.email.data, \
+                form.firstname.data, form.lastname.data, \
+                form.password.data, dateofbirth, \
+                form.name.data, form.lat.data, form.lon.data, \
+                form.phone.data, extra_info=form.extra_info.data)
             login_user(u)
             return redirect('/')
         except GoOutSafeError as e:
