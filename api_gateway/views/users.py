@@ -1,28 +1,35 @@
-from api_gateway.classes.exceptions import DatabaseError, GoOutSafeError, FormValidationError
-from api_gateway.classes.user import new_operator, new_user, users_view, edit_user_data
-from flask import Blueprint, redirect, render_template, flash, request, current_app
+from api_gateway.views.auth import login
+from datetime import datetime
+from api_gateway.classes.restaurant import Restaurant
+from api_gateway.classes.exceptions import GoOutSafeError, FormValidationError
+from api_gateway.classes.user import User
+from flask import Blueprint, redirect, render_template, request, current_app
 from flask_login import login_user, login_required
-from api_gateway.database import Restaurant, db, User
-from api_gateway.auth import admin_required, current_user
+from api_gateway.auth import current_user
 from api_gateway.forms import OperatorForm, UserForm, UserProfileEditForm
-from api_gateway.classes.notification_retrieval import *
+# from api_gateway.classes.notification_retrieval import *
 
 
 users = Blueprint('users', __name__)
 
 @users.route('/users')
 def _users():
-    users = users_view()
+    users = User.all()
     return render_template("users.html", users=users)
-
+ 
 
 @users.route('/create_user', methods=['GET', 'POST'])
 def create_user():
     form = UserForm()
     if request.method == 'POST':
         try:
-            u = new_user(form)
-            login_user(u)
+            dateofbirth = datetime(form.dateofbirth.data.year, form.dateofbirth.data.month, form.dateofbirth.data.day)
+            id = User.create(email=form.email.data, \
+                firstname=form.firstname.data, lastname=form.lastname.data, \
+                password=form.password.data, fiscal_code=form.fiscal_code.data, \
+                phone=str(form.phone.data), dateofbirth=dateofbirth)
+            u = User.get(id=id)
+            login()
             return redirect('/')
         except FormValidationError:
             return render_template('create_user.html', form=form)
@@ -37,7 +44,12 @@ def create_operator():
     form = OperatorForm()
     if request.method == 'POST':
         try:
-            u = new_operator(form)
+            dateofbirth = datetime(form.dateofbirth.data.year, form.dateofbirth.data.month, form.dateofbirth.data.day)
+            u = Restaurant.create(form.email.data, \
+                form.firstname.data, form.lastname.data, \
+                form.password.data, dateofbirth, \
+                form.name.data, form.lat.data, form.lon.data, \
+                form.phone.data, extra_info=form.extra_info.data)
             login_user(u)
             return redirect('/')
         except GoOutSafeError as e:
@@ -48,7 +60,7 @@ def create_operator():
     return render_template('create_user.html', form=form)
 
 
-@users.route('/users/edit/<user_id>', methods=['GET', 'POST'])
+"""@users.route('/users/edit/<user_id>', methods=['GET', 'POST'])
 @login_required
 def edit_user(user_id):
     if current_user.id != int(user_id):
@@ -63,9 +75,9 @@ def edit_user(user_id):
             return render_template("useredit.html", form=form)
         except Exception as e:
             return render_template("error.html", error_message=str(e))
-    return render_template("useredit.html", form=form)
+    return render_template("useredit.html", form=form)"""
 
-
+"""
 @users.route('/notifications', methods=['GET'])
 @login_required
 def all_notifications():
@@ -87,3 +99,4 @@ def get_notification(notification_id):
         return render_template('notification_detail.html', notification=notif)
     except GoOutSafeError as e:
         return render_template("error.html", error_message=str(e))
+        """

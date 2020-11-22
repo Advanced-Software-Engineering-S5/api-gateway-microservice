@@ -1,8 +1,9 @@
 # from database import Restaurant
-import connexion, logging
-from api_gateway.auth import jwt_manager
-from flask import request, make_response
-from .database import db
+#import connexion, logging
+import logging
+from api_gateway.auth import jwt_manager, user_loader_ctx_processor
+from flask import Flask, request, make_response
+from .views import blueprints
 
 db_session = None
 
@@ -20,17 +21,19 @@ logging.basicConfig(level=logging.INFO)
 
 def create_app(dbfile='sqlite:///notification_gooutsafe.db'):
     # db_session = database.init_db('sqlite:///restaurant.db')
-    app = connexion.App(__name__)
-    app.add_api('swagger.yml')
-    app = app.app
+    app = Flask(__name__)
+    # app.add_api('swagger.yml')
+    # app = app.app
 
     jwt_manager.init_app(app)
-    # app.config['WTF_CSRF_SECRET_KEY'] = 'A SECRET KEY'
+    app.context_processor(user_loader_ctx_processor)
+    app.config['WTF_CSRF_SECRET_KEY'] = 'A SECRET KEY'
     app.config['JWT_SECRET_KEY'] = 'secret_key_bella_e_nascosta'
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
     app.config['JWT_ACCESS_COOKIE_NAME'] = 'gooutsafe_jwt_token'
     app.config['JWT_COOKIE_CSRF_PROTECT'] = True
     app.config['JWT_CSRF_IN_COOKIES'] = True
+    app.secret_key = b'a#very#fantastic#secretkey'
     # app.config['SQLALCHEMY_DATABASE_URI'] = dbfile
     # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     # # celery config
