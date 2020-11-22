@@ -1,4 +1,6 @@
 from __future__ import annotations
+from os import stat
+from api_gateway.classes.user import User
 
 from sqlalchemy.sql.functions import user
 from api_gateway.classes.exceptions import GoOutSafeError
@@ -113,8 +115,35 @@ class Restaurant:
         return self
     
     @staticmethod
-    def create():
-        pass
+    def create(email, firstname, lastname, password, dateofbirth, name, lat, lon, phone, extra_info=None):
+        body_restaurant = {
+            'name': name,
+            'lat': lat,
+            'lon': lon,
+            'phone': phone,
+            'extra_info': extra_info
+        }
+
+        req = requests.post(f"{Restaurant.BASE_URL}/new", data=body_restaurant)
+        if req.status_code != 201:
+            return None
+        
+        restaurant_id = req.json()
+        ret = User.create(email, firstname=firstname, \
+                lastname=lastname, password=password, dateofbirth=dateofbirth, \
+                restaurant_id=restaurant_id)
+        if not ret:
+            # user creation didn't go well, reverting restaurant db
+            Restaurant.delete(restaurant_id)
+        return User.get(id=ret)
+
+
+    @staticmethod
+    def delete(restaurant_id):
+        req = requests.delete(f"{Restaurant.BASE_URL}/restaurants/{restaurant_id}")
+        if req.status_code != 200:
+            raise GoOutSafeError()
+        
 
 
 @dataclass(eq=False, order=False)

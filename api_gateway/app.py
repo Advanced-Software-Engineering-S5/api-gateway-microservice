@@ -25,12 +25,13 @@ def create_app(dbfile='sqlite:///notification_gooutsafe.db'):
     app = app.app
 
     jwt_manager.init_app(app)
-    # app.config['WTF_CSRF_SECRET_KEY'] = 'A SECRET KEY'
+    app.config['WTF_CSRF_SECRET_KEY'] = 'A SECRET KEY'
     app.config['JWT_SECRET_KEY'] = 'secret_key_bella_e_nascosta'
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
     app.config['JWT_ACCESS_COOKIE_NAME'] = 'gooutsafe_jwt_token'
     app.config['JWT_COOKIE_CSRF_PROTECT'] = True
     app.config['JWT_CSRF_IN_COOKIES'] = True
+    app.secret_key = b'a#very#fantastic#secretkey'
     # app.config['SQLALCHEMY_DATABASE_URI'] = dbfile
     # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     # # celery config
