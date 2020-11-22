@@ -39,7 +39,6 @@ def expired_token_callback():
 
 
 # flask_jwt_extended fai cacare
-@jwt_optional
 def user_loader_ctx_processor():
     # Pass the JWT current_user as current_user like flask-login does
     return dict(current_user=current_user)
