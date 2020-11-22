@@ -3,10 +3,9 @@ from api_gateway.classes.exceptions import GoOutSafeError
 import api_gateway.classes.customer_reservations as cr
 from flask import Blueprint, redirect, render_template, request, flash
 from api_gateway.database import Reservation, db, Restaurant, Review, RestaurantTable
-from api_gateway.auth import admin_required, current_user
+# from api_gateway.auth import admin_required, current_user
 from flask_login import (current_user, login_user, logout_user,
                          login_required)
-from api_gateway.forms import RatingForm, UserForm, ReservationForm, RestaurantProfileEditForm
 from sqlalchemy import func
 from datetime import datetime
 
