@@ -22,10 +22,10 @@ class Restaurant:
     Restaurant.get call.
     """
 
-    BASE_URL = f"http://{os.environ.get('GOS_RESTAURANT')}"
+    #BASE_URL = f"{os.environ.get('GOS_RESTAURANT')}"
+    BASE_URL = "http://restaurant:5000"
 
     id : int
-    likes : int
     name : str
     lat : float
     lon : float

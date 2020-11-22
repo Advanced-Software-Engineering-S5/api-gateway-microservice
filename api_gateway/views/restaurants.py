@@ -25,7 +25,7 @@ def restaurant_sheet(restaurant_id):
     record = Restaurant.get(restaurant_id)
     if not record:
         return render_template("error.html", error_message="The page you're looking does not exists")
-    if not current_user.is_authenticated:
+    if not current_user or not current_user.is_authenticated:
         return render_template("restaurantsheet.html", record=record)
     review = Review.get(restaurant_id, current_user.id)
     if review is not None:

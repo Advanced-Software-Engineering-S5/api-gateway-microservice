@@ -1,9 +1,11 @@
 import os, requests
-from flask import session, request, make_response
+from flask import Blueprint, session, request, make_response
 from ..classes.user import User
 from datetime import datetime
 from flask_jwt_extended import set_access_cookies, decode_token
 from api_gateway.auth import currently_logged_in
+
+auth = Blueprint('auth', __name__)
 
 def login():
     # TODO: Must work with login form

@@ -3,7 +3,6 @@ import connexion, logging
 from api_gateway.auth import jwt_manager
 from flask import request, make_response
 from .views import blueprints
-from .database import db
 
 db_session = None
 

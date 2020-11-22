@@ -54,7 +54,7 @@
   {% if record.extra_info %}
   <h3>Info: {{ record.extra_info }}</h3>
   {% endif %}
-  {% if current_user.is_authenticated %}
+  {% if current_user and current_user.is_authenticated %}
   <h4><a href='/restaurants/reserve/{{ record.id }}'>Book a table!</a></h4>
   {% else %}
   <h4><a href='/login'>Login</a> or <a href="/create_user">register</a> to book table!</a></h4>
@@ -86,7 +86,7 @@
 
     </script>
 
-    {% if current_user.is_authenticated and form is defined %}
+    {% if current_user and current_user.is_authenticated and form is defined %}
     <br>
     <div class="stars" data-rating="0">
       <span class="star">&nbsp;</span>
@@ -149,10 +149,10 @@
       {% endfor %}
       {{ form.submit }}
     </form>
-    {% elif current_user.is_authenticated and current_user.restaurant_id is none %}
+    {% elif current_user and current_user.is_authenticated and current_user.restaurant_id is none %}
     <br>
     <p>You already inserted a review!</p>
-    {% elif not current_user.is_authenticated %}
+    {% elif current_user and not current_user.is_authenticated %}
     <br>
     <p><a href='/login'>Login</a> to insert a review!</p>
     {% endif %}
