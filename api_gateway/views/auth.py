@@ -1,4 +1,5 @@
 import os, requests
+from flask.helpers import url_for
 from flask import Blueprint, session, request, make_response, render_template
 from werkzeug.utils import redirect
 from ..classes.user import User
@@ -52,6 +53,13 @@ def delete(id):
     # delete_user(int(id))
     return redirect('/')
 
+@auth.route('/logout')
 def logout():
     # TODO: Add cookie removal and remove from currently_logged_in.
-    pass
+    response = make_response()
+    response.set_cookie('gooutsafe_jwt_token', "", expires=0)
+    response.set_cookie("csrf_access_token", "", expires=0)
+    response.status_code = 301
+    response.location = url_for("home.index")
+    currently_logged_in[str(current_user.id)] = None
+    return response

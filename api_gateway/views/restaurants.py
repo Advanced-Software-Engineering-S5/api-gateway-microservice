@@ -107,7 +107,7 @@ def _edit(restaurant_id):
     
     if request.method == 'POST':
         try:
-            Restaurant.update(restaurant_id, request.form, phone=form.phone, extra_info=form.extra_info)
+            Restaurant.update(restaurant_id, request.form, phone=form.phone.data, extra_info=form.extra_info.data)
             return redirect('/restaurants/edit/' + restaurant_id)
         except GoOutSafeError as e:
             return render_template("restaurantedit.html", restaurant=r, form=form, tables=tables)
