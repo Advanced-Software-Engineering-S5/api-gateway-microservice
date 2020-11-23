@@ -24,8 +24,8 @@ class Restaurant:
     Restaurant.get call.
     """
 
-    BASE_URL = f"{os.environ.get('GOS_RESTAURANT')}"
-    #BASE_URL = "http://restaurant:5000"
+    # BASE_URL = f"{os.environ.get('GOS_RESTAURANT')}"
+    BASE_URL = "http://restaurant:5000"
 
     id : int
     name : str
@@ -51,7 +51,7 @@ class Restaurant:
             usr = User.get(email='op@op.com')
         """
         req = requests.get(f"{Restaurant.BASE_URL}/restaurants")
-        l = []
+        l = [Restaurant.get(1)]
         if req.status_code == 200:
             json_dict = req.json()
             for j in json_dict:

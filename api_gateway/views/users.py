@@ -4,7 +4,6 @@ from api_gateway.classes.restaurant import Restaurant
 from api_gateway.classes.exceptions import GoOutSafeError, FormValidationError
 from api_gateway.classes.user import User
 from flask import Blueprint, redirect, render_template, request, current_app
-from flask_login import login_user, login_required
 from api_gateway.auth import current_user
 from api_gateway.forms import OperatorForm, UserForm, UserProfileEditForm
 # from api_gateway.classes.notification_retrieval import *
@@ -28,7 +27,6 @@ def create_user():
                 firstname=form.firstname.data, lastname=form.lastname.data, \
                 password=form.password.data, fiscal_code=form.fiscal_code.data, \
                 phone=str(form.phone.data), dateofbirth=dateofbirth)
-            u = User.get(id=id)
             login()
             return redirect('/')
         except FormValidationError:
@@ -50,7 +48,7 @@ def create_operator():
                 form.password.data, dateofbirth, \
                 form.name.data, form.lat.data, form.lon.data, \
                 form.phone.data, extra_info=form.extra_info.data)
-            login_user(u)
+            login()
             return redirect('/')
         except GoOutSafeError as e:
             return render_template('create_user.html', form=form)
@@ -60,8 +58,8 @@ def create_operator():
     return render_template('create_user.html', form=form)
 
 
-"""@users.route('/users/edit/<user_id>', methods=['GET', 'POST'])
-@login_required
+@users.route('/users/edit/<user_id>', methods=['GET', 'POST'])
+# @login_required
 def edit_user(user_id):
     if current_user.id != int(user_id):
         return render_template("error.html", error_message="You aren't supposed to be here!")
@@ -69,13 +67,13 @@ def edit_user(user_id):
     form = UserProfileEditForm(obj=current_user)
     if request.method == 'POST':
         try:
-            edit_user_data(form, user_id)
+            # edit_user_data(form, user_id)
             return redirect('/users/edit/' + user_id)
         except GoOutSafeError:
             return render_template("useredit.html", form=form)
         except Exception as e:
             return render_template("error.html", error_message=str(e))
-    return render_template("useredit.html", form=form)"""
+    return render_template("useredit.html", form=form)
 
 """
 @users.route('/notifications', methods=['GET'])

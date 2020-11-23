@@ -1,9 +1,8 @@
 from flask import Blueprint, redirect, render_template, request, url_for, flash
 from flask_login import current_user, login_user, logout_user, login_required
 from api_gateway.auth import current_user
-from api_gateway.database import db, Reservation, RestaurantTable, User, ReservationState
-from api_gateway.views.reservations import prettytime
-from api_gateway.classes.customer_reservations import get_user_reservations, delete_reservation, update_reservation
+# from api_gateway.views.reservations import prettytime
+# from api_gateway.classes.customer_reservations import get_user_reservations, delete_reservation, update_reservation
 from api_gateway.forms import ReservationForm
 
 from datetime import datetime
@@ -16,9 +15,10 @@ customer_reservations = Blueprint('customer_reservations',
 @customer_reservations.route('/', methods=('GET', ))
 @login_required
 def get_reservations():
-    reservations = get_user_reservations(current_user.id)
+    pass
+    """reservations = get_user_reservations(current_user.id)
     return render_template("customer_reservations.html",
-                           reservations=reservations)
+                           reservations=reservations)"""
 
 
 @customer_reservations.route('/<reservation_id>/update',
@@ -28,7 +28,8 @@ def get_reservations():
                              ))
 @login_required
 def update_user_reservation(reservation_id: int):
-    reservation = db.session.query(Reservation).filter_by(
+    pass
+    """reservation = db.session.query(Reservation).filter_by(
         id=reservation_id).first()
     form = ReservationForm()
     if (request.method == 'POST'):
@@ -61,7 +62,7 @@ def update_user_reservation(reservation_id: int):
                     return redirect('/my_reservations/')
     return render_template('update_reservation.html',
                            reservation=reservation,
-                           form=form)
+                           form=form)"""
 
 
 @customer_reservations.route('/<reservation_id>/delete',
@@ -71,11 +72,12 @@ def update_user_reservation(reservation_id: int):
                              ))
 @login_required
 def delete_user_reservation(reservation_id: int):
-    if (delete_reservation(reservation_id=reservation_id)):
+    pass
+    """if (delete_reservation(reservation_id=reservation_id)):
         flash('Your reservation has been correctly deleted', 'reservation_mod')
         return redirect(request.referrer)
     else:
         return render_template(
             "error.html",
             error_message="You are trying to delete an unexisting reservation."
-        )
+        )"""
