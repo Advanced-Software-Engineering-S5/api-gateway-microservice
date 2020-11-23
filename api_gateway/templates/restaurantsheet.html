@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block head%}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <style>
+      textarea {
+        resize: none;
+    }
+    .star {
+      color: goldenrod;
+      font-size: 2.0rem;
+      padding: 0 1rem;
+      /* space out the stars */
+    }
+
+    .star::before {
+      content: '\2606';
+      /* star outline */
+      cursor: pointer;
+    }
+
+    .star.rated::before {
+      /* the style for a selected star */
+      content: '\2605';
+      /* filled star */
+    }
+
+    .stars {
+      counter-reset: rateme 0;
+      font-size: 2.0rem;
+      font-weight: 900;
+    }
+
+    .star.rated {
+      counter-increment: rateme 1;
+    }
+
+    .stars::after {
+      content: counter(rateme) '/5';
+    }
+  </style>
+{% endblock%}
+
+{% block content %}
+  <h1>{{record.name}}</h1>
+  <h2>Phone: {{ record.phone }}</h2>
+  {% if record.extra_info %}
+  <h3>Info: {{ record.extra_info }}</h3>
+  {% endif %}
+  {% if current_user and current_user.is_authenticated %}
+  <h4><a href='/restaurants/reserve/{{ record.id }}'>Book a table!</a></h4>
+  {% else %}
+  <h4><a href='/login'>Login</a> or <a href="/create_user">register</a> to book table!</a></h4>
+  {% endif %}
+  <p>Average Rating: {{record.avg_stars}} ({{record.num_reviews}} reviews)</p>
+  <br>
+  <ul>
+    <div id="mapid" style="width: 600px; height: 300px;"></div>
+    <script>
+
+      var map = L.map('mapid').setView([51.505, -0.09], 2);
+
+      L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+        maxZoom: 18,
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+          '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+          'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        id: 'mapbox/streets-v11',
+        tileSize: 512,
+        zoomOffset: -1
+      }).addTo(map);
+      var mark = L.marker(['{{ record.lat }}', '{{ record.lon }}']).addTo(map)
+        .bindPopup("<b>{{ record.name }}</b><br><center>{{ record.phone }}</center>").openPopup();
+
+      mark.on('click', function (e) {
+        map.setView(e.latlng, 17);
+      });
+      map.setView(['{{ record.lat }}', '{{ record.lon }}'], 17);
+
+    </script>
+
+    {% if current_user and current_user.is_authenticated and form is defined %}
+    <br>
+    <div class="stars" data-rating="0">
+      <span class="star">&nbsp;</span>
+      <span class="star">&nbsp;</span>
+      <span class="star">&nbsp;</span>
+      <span class="star">&nbsp;</span>
+      <span class="star">&nbsp;</span>
+    </div>
+    <script>
+      //initial setup
+      document.addEventListener('DOMContentLoaded', function () {
+        let stars = document.querySelectorAll('.star');
+        stars.forEach(function (star) {
+          star.addEventListener('click', setRating);
+        });
+
+        let rating = parseInt(document.querySelector('.stars').getAttribute('data-rating'));
+        let target = stars[rating - 1];
+        target.dispatchEvent(new MouseEvent('click'));
+      });
+
+      function setRating(ev) {
+        let span = ev.currentTarget;
+        let stars = document.querySelectorAll('.star');
+        let match = false;
+        let num = 0;
+
+        stars.forEach(function (star, index) {
+          if (match) {
+            star.classList.remove('rated');
+          } else {
+            star.classList.add('rated');
+          }
+          //are we currently looking at the span that was clicked
+          if (star === span) {
+            match = true;
+            num = index + 1;
+          }
+        });
+
+        var x = document.getElementById("123");
+        console.log(x)
+        document.querySelector('.stars').setAttribute('data-rating', num);
+
+        console.log(num)
+        $(document).ready(function () {    // function that take the  rating value and insert in to hidden html input 
+          $('input[name="stars_number"]').val(num);
+        });
+      }  
+    </script>
+    <form action="" method="POST">
+      <!-- // input for rating value  -->
+      <input type="hidden" name="stars_number" value="">
+      {{ form.hidden_tag() }}
+      <p>
+        {{ form.review(rows='3',cols='50') }}
+      </p>
+      {% for error in form.review.errors %}
+      <span style="color: red;">[{{ error }}]</span>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary pr-4 pl-4">Submit</button>
+    </form>
+    {% elif current_user and current_user.is_authenticated and current_user.restaurant_id is none %}
+    <br>
+    <p>You already inserted a review!</p>
+    {% elif current_user and not current_user.is_authenticated %}
+    <br>
+    <p><a href='/login'>Login</a> to insert a review!</p>
+    {% endif %}
+  </ul>
+{% endblock%}

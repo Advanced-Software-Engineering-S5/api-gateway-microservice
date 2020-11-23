@@ -3,7 +3,9 @@ from api_gateway.app import create_app
 from api_gateway.classes.user import User
 from datetime import datetime
 from flask import Flask, session, request, make_response
+from flask_wtf.csrf import generate_csrf
 from api_gateway.auth import *
+from api_gateway.forms import LoginForm
 
 User.BASE_URL = f"http://{os.environ.get('GOS_USER')}"
 
@@ -85,7 +87,7 @@ class TestLogin(unittest.TestCase):
                 self.assertEqual(
                     client.post("/login",
                                 content_type="application/x-www-form-urlencoded",
-                                data=dict(email=user['email'], password=user['password'])).status_code, 200)
+                                data=dict(email=user['email'], password=user['password'])).status_code, 301)
                 #Now fail
                 self.assertEqual(
                     client.post("/login",
