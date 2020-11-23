@@ -33,7 +33,12 @@ def login():
             form.email.errors = ("The email or password inserted is invalid",)
             return render_template('login.html', form=form), 401
 
-    return render_template('login.html', form=form), 200
+    #Reset the cookies if we want to login again
+    response = make_response(render_template('login.html', form=form))
+    response.set_cookie('gooutsafe_jwt_token', "", expires=0)
+    response.set_cookie("csrf_access_token", "", expires=0)
+    response.status_code = 200
+    return response
 
 
 def logout():

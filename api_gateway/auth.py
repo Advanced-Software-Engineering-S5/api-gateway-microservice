@@ -1,12 +1,22 @@
 import functools
 from api_gateway.classes.user import User
-from flask_jwt_extended import jwt_required, JWTManager, current_user, jwt_optional
-from flask import redirect, url_for, make_response
+from werkzeug.local import LocalProxy
+from flask_jwt_extended import jwt_required, JWTManager, current_user, jwt_optional, get_jwt_identity, verify_jwt_in_request_optional
+from flask import redirect, url_for, make_response, request
 
 jwt_manager = JWTManager()
 currently_logged_in = {}
 
-current_user = current_user
+current_user = LocalProxy(lambda: _get_jwt_user())
+
+class AnonymousUser():
+    pass
+
+
+@jwt_optional
+def _get_jwt_user():
+    usr = currently_logged_in.get(str(get_jwt_identity()))
+    return (usr if isinstance(usr, User) else None)
 
 
 @jwt_manager.unauthorized_loader
@@ -21,9 +31,7 @@ def loader(user_id):
         user = User.get(id=user_id)
         if user:
             user.is_authenticated = True
-            currently_logged_in[str(user_id)] = user
-        else:
-            return {}
+        currently_logged_in[str(user_id)] = user or AnonymousUser()
     return currently_logged_in.get(str(user_id))
 
 
@@ -39,7 +47,6 @@ def expired_token_callback():
 
 
 # flask_jwt_extended fai cacare
-@jwt_optional
 def user_loader_ctx_processor():
     # Pass the JWT current_user as current_user like flask-login does
     return dict(current_user=current_user)
