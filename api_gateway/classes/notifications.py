@@ -20,3 +20,12 @@ def fetch_notifications(user, unread_only=False):
         except Exception as e:
             logging.error(e)
             return []
+
+def get_notification_by_id(notification_id):
+    try:
+        resp = safe_get(f"http://{os.environ.get('GOS_NOTIFICATION')}/notifications/{notification_id}")
+        return resp.json()['notifications']
+    except Exception as e:
+        logging.error(e)
+        # in case notification service is down, report no notification to the user
+        return {}

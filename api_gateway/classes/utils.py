@@ -3,8 +3,8 @@ import logging
 from requests.exceptions import Timeout
 from api_gateway.classes.exceptions import TimeoutError
 
-TIMEOUT_SECS = 2 
-RETRIES = 3
+TIMEOUT_SECS = 1 
+RETRIES = 2
 def safe_get(url: str, retries=RETRIES):
     if retries == 0:
         raise TimeoutError
