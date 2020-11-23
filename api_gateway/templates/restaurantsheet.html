@@ -137,7 +137,7 @@
         });
       }  
     </script>
-    <form action="" method="post">
+    <form action="" method="POST">
       <!-- // input for rating value  -->
       <input type="hidden" name="stars_number" value="">
       {{ form.hidden_tag() }}
@@ -147,7 +147,7 @@
       {% for error in form.review.errors %}
       <span style="color: red;">[{{ error }}]</span>
       {% endfor %}
-      {{ form.submit }}
+      <button type="submit" class="btn btn-primary pr-4 pl-4">Submit</button>
     </form>
     {% elif current_user and current_user.is_authenticated and current_user.restaurant_id is none %}
     <br>

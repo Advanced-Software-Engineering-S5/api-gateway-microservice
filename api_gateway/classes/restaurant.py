@@ -24,7 +24,7 @@ class Restaurant:
     Restaurant.get call.
     """
 
-    # BASE_URL = f"{os.environ.get('GOS_RESTAURANT')}"
+    # BASE_URL = f"http://{os.environ.get('GOS_RESTAURANT')}"
     BASE_URL = "http://restaurant:5000"
 
     id : int
@@ -33,7 +33,7 @@ class Restaurant:
     lon : float
     phone : str
     extra_info : Optional[str]
-    avg_stay_time : time
+    avg_stay_time : time    
     avg_stars : float
     num_reviews : int
 
@@ -51,7 +51,7 @@ class Restaurant:
             usr = User.get(email='op@op.com')
         """
         req = requests.get(f"{Restaurant.BASE_URL}/restaurants")
-        l = [Restaurant.get(1)]
+        l = []
         if req.status_code == 200:
             json_dict = req.json()
             for j in json_dict:
@@ -180,7 +180,8 @@ class RestaurantTable:
 @dataclass(eq=False, order=False)
 class Review:
 
-    BASE_URL = f"http://{os.environ.get('GOS_RESTAURANT')}"
+    # BASE_URL = f"http://{os.environ.get('GOS_RESTAURANT')}"
+    BASE_URL = "http://restaurant:5000"
 
     reviewer_id : int
     restaurant_id : int
@@ -197,23 +198,21 @@ class Review:
             body['text_review'] = text
         req = requests.post(f"{Review.BASE_URL}/reviews/{restaurant_id}", data=body)
         if req.status_code != 201:
-            raise GoOutSafeError
+            raise GoOutSafeError("DB error")
 
     @staticmethod
-    def get(restaurant_id, user_id):
-        req = requests.get(f"{Review.BASE_URL}/reviews/{restaurant_id}?user_id={user_id}")
-
-        if req.status_code == 200:
-            json_dict = req.json()
-            convert_json(json_dict)
-            r = Review(**json_dict)
-            r.invariant = json_dict
-            return r
-        return None
-
-    @staticmethod
-    def get(restaurant_id):
-        req = requests.get(f"{Review.BASE_URL}/reviews/{restaurant_id}")
+    def get(restaurant_id, user_id=None):
+        if user_id:
+            req = requests.get(f"{Review.BASE_URL}/reviews/{restaurant_id}?user_id={user_id}")
+            if req.status_code == 200:
+                json_dict = req.json()
+                if not json_dict:
+                    return None
+                r = Review(**json_dict[0])
+                r.invariant = json_dict[0]
+                return r
+        else:
+            req = requests.get(f"{Review.BASE_URL}/reviews/{restaurant_id}")
 
         l = []
         if req.status_code == 200:

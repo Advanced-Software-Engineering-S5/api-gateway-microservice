@@ -83,5 +83,4 @@ class ReservationForm(FlaskForm):
 
 class RatingForm(FlaskForm): 
     review = f.TextAreaField(validators=[Optional()], render_kw={"placeholder":"(optional) Add a written review!"})  
-    submit = f.SubmitField('Submit') 
-    display = ['review', 'submit']
+    display = ['review']
