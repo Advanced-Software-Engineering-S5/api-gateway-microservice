@@ -100,7 +100,7 @@ def _reserve(restaurant_id):
 def _edit(restaurant_id):
     if (not current_user.restaurant_id) or current_user.restaurant_id != int(restaurant_id):
         return render_template("error.html", error_message="You haven't the permissions to access this page")
-    r = Restaurant.query.get(restaurant_id)
+    r = Restaurant.get(restaurant_id)
     form = RestaurantProfileEditForm(obj=r)
 
     tables = RestaurantTable.get(r.id)

@@ -32,7 +32,7 @@ services:
     build: ./microservices/user_microservice
     container_name: user-gooutsafe
     ports:
-      - "6000:5000"
+      - "7020:5000"
       # - "5000"
     volumes:
         - ./microservices/user_microservice:/app
