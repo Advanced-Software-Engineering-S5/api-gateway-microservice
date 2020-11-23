@@ -4,7 +4,7 @@ from api_gateway.classes.restaurant import Restaurant
 from api_gateway.classes.exceptions import GoOutSafeError, FormValidationError
 from api_gateway.classes.user import User
 from flask import Blueprint, redirect, render_template, request, current_app
-from api_gateway.auth import current_user
+from api_gateway.auth import current_user, login_required
 from api_gateway.forms import OperatorForm, UserForm, UserProfileEditForm
 # from api_gateway.classes.notification_retrieval import *
 
@@ -59,7 +59,7 @@ def create_operator():
 
 
 @users.route('/users/edit/<user_id>', methods=['GET', 'POST'])
-# @login_required
+@login_required
 def edit_user(user_id):
     if current_user.id != int(user_id):
         return render_template("error.html", error_message="You aren't supposed to be here!")

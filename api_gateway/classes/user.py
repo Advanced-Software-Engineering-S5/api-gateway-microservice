@@ -21,8 +21,8 @@ class User:
     User.get call.
     """
 
-    # BASE_URL = f"http://{os.environ.get('GOS_USER')}"
-    BASE_URL = "http://user:5000"
+    BASE_URL = f"http://{os.environ.get('GOS_USER')}"
+    # BASE_URL = "http://user:5000"
 
     id: int
     email: str
