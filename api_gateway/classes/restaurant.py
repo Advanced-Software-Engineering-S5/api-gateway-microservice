@@ -24,8 +24,8 @@ class Restaurant:
     Restaurant.get call.
     """
 
-    BASE_URL = f"{os.environ.get('GOS_RESTAURANT')}"
-    #BASE_URL = "http://restaurant:5000"
+    BASE_URL = f"http://{os.environ.get('GOS_RESTAURANT')}"
+    # BASE_URL = "http://restaurant:5000"
 
     id : int
     name : str
@@ -33,7 +33,7 @@ class Restaurant:
     lon : float
     phone : str
     extra_info : Optional[str]
-    avg_stay_time : time
+    avg_stay_time : time    
     avg_stars : float
     num_reviews : int
 
@@ -94,14 +94,14 @@ class Restaurant:
 
         body = {"tables":[]}
         i = 1
-        for t in tables:
-            body['tables'].append({"table_id":i, "seats":t.seats})
+        while tables.get('table_' + str(i)) != None:
+            body['tables'].append({"table_id":i, "seats": int(tables.get('table_' + str(i)))})
             i = i + 1
 
         if phone:
-            body['phone'] = phone
+            body['phone'] = str(phone)
         if extra_info:
-            body['extra_info'] = extra_info
+            body['extra_info'] = str(extra_info)
 
         req = requests.put(f"{Restaurant.BASE_URL}/restaurants/{id}", json=body)
         if req.status_code != 201:
@@ -117,24 +117,26 @@ class Restaurant:
     @staticmethod
     def create(email, firstname, lastname, password, dateofbirth, name, lat, lon, phone, extra_info=None):
         body_restaurant = {
-            'name': name,
-            'lat': lat,
-            'lon': lon,
-            'phone': phone,
-            'extra_info': extra_info
+            'name': str(name),
+            'lat': float(lat),
+            'lon': float(lon),
+            'phone': str(phone),
+            'extra_info': str(extra_info)
         }
 
-        req = requests.post(f"{Restaurant.BASE_URL}/new", data=body_restaurant)
+        req = requests.post(f"{Restaurant.BASE_URL}/restaurants/new", json=body_restaurant)
         if req.status_code != 201:
-            return None
+            raise Exception(str(req))
         
         restaurant_id = req.json()
-        ret = User.create(email, firstname=firstname, \
+        ret = User.create(email=email, firstname=firstname, \
                 lastname=lastname, password=password, dateofbirth=dateofbirth, \
                 restaurant_id=restaurant_id)
         if not ret:
             # user creation didn't go well, reverting restaurant db
             Restaurant.delete(restaurant_id)
+            return None
+        
         return User.get(id=ret)
 
 
@@ -154,8 +156,6 @@ class RestaurantTable:
     Restaurant.get call.
     """
 
-    BASE_URL = f"http://{os.environ.get('GOS_RESTAURANT')}"
-
     table_id : int
     restaurant_id : int
     seats : int
@@ -165,13 +165,13 @@ class RestaurantTable:
 
     @staticmethod
     def get(restaurant_id):
-        req = requests.get(f"{RestaurantTable.BASE_URL}/restaurants/tables/{restaurant_id}")
+        req = requests.get(f"{Restaurant.BASE_URL}/restaurants/tables/{restaurant_id}")
 
         l = []
         if req.status_code == 200:
             json_dict = req.json()
-            for j in json_dict:
-                r = RestaurantTable(**j)
+            for j in json_dict["tables"]:
+                r = RestaurantTable(table_id=j["table_id"], restaurant_id=restaurant_id, seats=j["seats"])
                 r.invariant = j
                 l.append(r)
         return l
@@ -179,8 +179,6 @@ class RestaurantTable:
 
 @dataclass(eq=False, order=False)
 class Review:
-
-    BASE_URL = f"http://{os.environ.get('GOS_RESTAURANT')}"
 
     reviewer_id : int
     restaurant_id : int
@@ -195,25 +193,23 @@ class Review:
         body = {"reviewer_id":user_id, "stars":stars}
         if text:
             body['text_review'] = text
-        req = requests.post(f"{Review.BASE_URL}/reviews/{restaurant_id}", data=body)
+        req = requests.post(f"{Restaurant.BASE_URL}/reviews/{restaurant_id}", json=body)
         if req.status_code != 201:
-            raise GoOutSafeError
+            raise GoOutSafeError("DB error")
 
     @staticmethod
-    def get(restaurant_id, user_id):
-        req = requests.get(f"{Review.BASE_URL}/reviews/{restaurant_id}?user_id={user_id}")
-
-        if req.status_code == 200:
-            json_dict = req.json()
-            convert_json(json_dict)
-            r = Review(**json_dict)
-            r.invariant = json_dict
-            return r
-        return None
-
-    @staticmethod
-    def get(restaurant_id):
-        req = requests.get(f"{Review.BASE_URL}/reviews/{restaurant_id}")
+    def get(restaurant_id, user_id=None):
+        if user_id:
+            req = requests.get(f"{Restaurant.BASE_URL}/reviews/{restaurant_id}?user_id={user_id}")
+            if req.status_code == 200:
+                json_dict = req.json()
+                if not json_dict:
+                    return None
+                r = Review(**json_dict[0])
+                r.invariant = json_dict[0]
+                return r
+        else:
+            req = requests.get(f"{Restaurant.BASE_URL}/reviews/{restaurant_id}")
 
         l = []
         if req.status_code == 200:

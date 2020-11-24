@@ -27,7 +27,7 @@ def restaurant_sheet(restaurant_id):
         return render_template("error.html", error_message="The page you're looking does not exists")
     if not current_user or not current_user.is_authenticated:
         return render_template("restaurantsheet.html", record=record)
-    review = Review.get(restaurant_id, current_user.id)
+    review = Review.get(restaurant_id, user_id=current_user.id)
     if review is not None:
         # show the user their updated view
         record.update_review(review.stars)
@@ -35,14 +35,17 @@ def restaurant_sheet(restaurant_id):
         and review is None:
         # the user is logged and hasn't already a review for this restaurant
         form = RatingForm()
-        if(request.method == 'POST'):
+        if request.method == 'POST':
             if form.validate_on_submit():
-                if form.review is not None:
-                    Review.add(restaurant_id, current_user.id, int(request.form.get("stars_number")), text=str(form.review.data))                                       
-                else:
-                    Review.add(restaurant_id, current_user.id, int(request.form.get("stars_number"))) 
-                # update review count immediately so user can see it
-                record.update_review(int(request.form.get("stars_number")))
+                try:
+                    if form.review is not None:
+                        Review.add(restaurant_id, current_user.id, int(request.form.get("stars_number")), text=str(form.review.data))                                       
+                    else:
+                        Review.add(restaurant_id, current_user.id, int(request.form.get("stars_number"))) 
+                    # update review count immediately so user can see it
+                    record.update_review(int(request.form.get("stars_number")))
+                except GoOutSafeError as e:
+                    return render_template("error.html", error_message=str(e))
         else:
             return render_template("restaurantsheet.html", form=form, record=record)
 
@@ -97,14 +100,14 @@ def _reserve(restaurant_id):
 def _edit(restaurant_id):
     if (not current_user.restaurant_id) or current_user.restaurant_id != int(restaurant_id):
         return render_template("error.html", error_message="You haven't the permissions to access this page")
-    r = Restaurant.query.get(restaurant_id)
+    r = Restaurant.get(restaurant_id)
     form = RestaurantProfileEditForm(obj=r)
 
     tables = RestaurantTable.get(r.id)
     
     if request.method == 'POST':
         try:
-            Restaurant.update(restaurant_id, request.form, phone=form.phone, extra_info=form.extra_info)
+            Restaurant.update(restaurant_id, request.form, phone=form.phone.data, extra_info=form.extra_info.data)
             return redirect('/restaurants/edit/' + restaurant_id)
         except GoOutSafeError as e:
             return render_template("restaurantedit.html", restaurant=r, form=form, tables=tables)

@@ -2,22 +2,12 @@
 #import connexion, logging
 import logging
 from api_gateway.auth import jwt_manager, user_loader_ctx_processor
-from flask import Flask, request, make_response
+from flask import Flask
 from .views import blueprints
 
 db_session = None
 
-
-def get_notifications(user_id):
-    return 'hi'
-
-
-def get_notification(user_id: int, notification_id):
-    return 'hello'
-
-
 logging.basicConfig(level=logging.INFO)
-
 
 def create_app(dbfile='sqlite:///notification_gooutsafe.db'):
     # db_session = database.init_db('sqlite:///restaurant.db')
@@ -31,8 +21,8 @@ def create_app(dbfile='sqlite:///notification_gooutsafe.db'):
     app.config['JWT_SECRET_KEY'] = 'secret_key_bella_e_nascosta'
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
     app.config['JWT_ACCESS_COOKIE_NAME'] = 'gooutsafe_jwt_token'
-    app.config['JWT_COOKIE_CSRF_PROTECT'] = True
-    app.config['JWT_CSRF_IN_COOKIES'] = True
+    app.config['JWT_COOKIE_CSRF_PROTECT'] = False
+    app.config['JWT_CSRF_IN_COOKIES'] = False
     app.secret_key = b'a#very#fantastic#secretkey'
     # app.config['SQLALCHEMY_DATABASE_URI'] = dbfile
     # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -56,4 +46,4 @@ def create_app(dbfile='sqlite:///notification_gooutsafe.db'):
 
 if __name__ == '__main__':
     app = create_app()
-    app.run(port=8080)
+    app.run()

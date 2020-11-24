@@ -1,10 +1,12 @@
 import os, requests
+from flask.helpers import url_for
 from flask import Blueprint, session, request, make_response, render_template
+from werkzeug.utils import redirect
 from ..classes.user import User
 from api_gateway.views import home
 from datetime import datetime
 from flask_jwt_extended import set_access_cookies, decode_token
-from api_gateway.auth import currently_logged_in
+from api_gateway.auth import currently_logged_in, login_required, current_user
 from api_gateway.forms import LoginForm
 
 auth = Blueprint('auth', __name__)
@@ -40,7 +42,24 @@ def login():
     response.status_code = 200
     return response
 
+@auth.route('/unregister/<id>')
+@login_required
+def delete(id):
+    if current_user.id != int(id):
+        return render_template("error.html", error_message="You are not supposed to be here")
+    if current_user.is_positive:
+        return render_template("error.html", error_message="You cannot unregister if marked positive")
+    # logout_user()
+    # delete_user(int(id))
+    return redirect('/')
 
+@auth.route('/logout')
 def logout():
     # TODO: Add cookie removal and remove from currently_logged_in.
-    pass
+    response = make_response()
+    response.set_cookie('gooutsafe_jwt_token', "", expires=0)
+    response.set_cookie("csrf_access_token", "", expires=0)
+    response.status_code = 301
+    response.location = url_for("home.index")
+    currently_logged_in[str(current_user.id)] = None
+    return response

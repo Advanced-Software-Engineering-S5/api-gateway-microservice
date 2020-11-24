@@ -12,3 +12,6 @@ class UserNotInDB(GoOutSafeError):
 
 class FormValidationError(GoOutSafeError):
     pass
+
+class TimeoutError(GoOutSafeError):
+    pass

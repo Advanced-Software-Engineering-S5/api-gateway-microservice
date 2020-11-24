@@ -22,7 +22,7 @@ def _get_jwt_user():
 @jwt_manager.unauthorized_loader
 def unauthorized(error_description):
     # TODO: return stuff
-    return "Unauthorized", 401
+    return "Unauthorized " + error_description, 401
 
 
 @jwt_manager.user_loader_callback_loader
