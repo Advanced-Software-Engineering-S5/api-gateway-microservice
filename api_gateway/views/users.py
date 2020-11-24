@@ -68,12 +68,12 @@ def edit_user(user_id):
     if current_user.id != int(user_id):
         return render_template("error.html", error_message="You aren't supposed to be here!")
 
-    form = UserProfileEditForm(obj=current_user)
+    form = UserProfileEditForm(obj=User.get(id=int(user_id)))
     if request.method == 'POST':
         try:
             if not form.validate_on_submit:
                 raise FormValidationError("Can't validate the form")
-            edit_user_data(form, user_id)
+            edit_user_data(int(user_id), form)
             return redirect('/users/edit/' + user_id)
         except GoOutSafeError:
             return render_template("useredit.html", form=form)
