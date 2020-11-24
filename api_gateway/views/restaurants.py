@@ -1,7 +1,7 @@
 from api_gateway.forms import RatingForm, ReservationForm, RestaurantProfileEditForm
 from api_gateway.classes.restaurant import Restaurant, RestaurantTable, Review
 from logging import error
-from api_gateway.classes.exceptions import GoOutSafeError
+from api_gateway.classes.exceptions import FormValidationError, GoOutSafeError
 from flask import Blueprint, redirect, render_template, request, flash
 from api_gateway.auth import admin_required, current_user, login_required
 from sqlalchemy import func
@@ -107,6 +107,8 @@ def _edit(restaurant_id):
     
     if request.method == 'POST':
         try:
+            if not form.validate_on_submit:
+                raise FormValidationError("Can't validate the form")
             Restaurant.update(restaurant_id, request.form, phone=form.phone.data, extra_info=form.extra_info.data)
             return redirect('/restaurants/edit/' + restaurant_id)
         except GoOutSafeError as e:
