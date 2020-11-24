@@ -35,7 +35,7 @@ class Reservation:
      Reservation abstraction over REST endpoints.
     """
 
-    BASE_URL = f'{os.environ.get("GOS_RESERVATION")}'
+    BASE_URL = f'http://{os.environ.get("GOS_RESERVATION")}'
 
     id: int
     user_id: int
@@ -89,11 +89,13 @@ class Reservation:
         url = f'{Reservation.BASE_URL}/reserve'
         try:  
             req = safe_post(url=url, json=body)
+            print(req.json())
             if req.status_code == 200:
                 return 'Reservation added correctly'
             else:
                 return req.json()['message']
         except Exception as e:
+            print(e)
             return 'Reservation service not reachable'    
     
     @staticmethod
@@ -105,6 +107,7 @@ class Reservation:
         url = f'{Reservation.BASE_URL}/customer_reservation/{reservation_id}'
         try:
             req = safe_put(url=url, json=body)
+            print(req)
             return req.json()['message']
         except Exception as e:
             return 'Reservation service not reachable'

@@ -16,17 +16,21 @@ def _reserve(restaurant_id):
     form = ReservationForm()
     restaurant = Restaurant.get(restaurant_id)
     if (request.method == 'POST'):
-
         if ReservationForm(request.form).validate_on_submit():
             reservation_time = datetime.combine(
                 ReservationForm(request.form).data['reservation_date'],
                 ReservationForm(request.form).data['reservation_time'])
+
+            if (reservation_time <= datetime.now()):
+                flash ('Invalid Date Error. You cannot reserve a table in the past!', 'booking')
+                return redirect(request.referrer)
+                
             seats = ReservationForm(request.form).data['seats']
-            mess = Reservation.new(current_user.id, restaurant_id, reservation_time, seats)
+            mess = Reservation.new(int(current_user.id), int(restaurant_id), reservation_time, seats)
+            print(mess)
             flash(mess, 'booking')
             return redirect('/restaurants')
-    else:
-        return render_template('reserve.html', name=restaurant.name, form=form)
+    return render_template('reserve.html', name=restaurant.name, form=form)
 
 @restaurants.route('/restaurants')
 def _restaurants(message=''):

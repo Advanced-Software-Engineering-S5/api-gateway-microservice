@@ -20,7 +20,7 @@
                     <h5 class="card-header text-center">Reservation for {{reservation.reservation_time|prettytime}}</h5>
                     <div class="card-body">
                       <ul class="list-group list-group-flush">
-                        <li class="list-group-item">Restaurant: {{reservation.restaurant.name}}</li>
+                        <li class="list-group-item">Restaurant: {{reservation.restaurant_id}}</li>
                         <li class="list-group-item">Current status: {{ reservation.status }}</li>
                         <li class="list-group-item">Table: {{reservation.table_no}}</li>
                         <li class="list-group-item">Seats: {{reservation.seats}}</li>
@@ -36,7 +36,7 @@
                             <div class="modal-dialog modal-dialog-centered" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                <h7 class="modal-title" id="updateModalTitle">Updating reservation for {{reservation.restaurant.name}}, {{reservation.reservation_time|prettytime}}</h7>
+                                <h7 class="modal-title" id="updateModalTitle">Updating reservation for {{reservation.restaurant_id}}, {{reservation.reservation_time|prettytime}}</h7>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>

@@ -76,7 +76,7 @@ class UserProfileEditForm(FlaskForm):
 class ReservationForm(FlaskForm):
     reservation_date = f.DateField('date',
                                    validators=[DataRequired(), DateRange(min=datetime.now().date())],
-                                   format='%d/%m/%Y', render_kw={"type":"date"})
+                                   format='%Y-%m-%d', render_kw={"type":"date"})
     reservation_time = f.TimeField('time', validators=[DataRequired()])
     seats = f.IntegerField('seats', validators=[DataRequired()])
     display = ['reservation_date', 'reservation_time', 'seats']
