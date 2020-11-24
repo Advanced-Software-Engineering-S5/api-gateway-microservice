@@ -5,13 +5,13 @@ from api_gateway.classes.exceptions import TimeoutError
 
 TIMEOUT_SECS = 1 
 RETRIES = 2
-def safe_get(url: str, retries=RETRIES):
+def safe_get(url: str, retries=RETRIES, params=None):
     if retries == 0:
         raise TimeoutError
     try:
-        return requests.get(url, timeout=TIMEOUT_SECS)
+        return requests.get(url, timeout=TIMEOUT_SECS, params=None)
     except Timeout as e:
-        return safe_get(url, retries-1)
+        return safe_get(url, retries-1, params=None)
 
 def safe_post(url: str, json: dict, retries=RETRIES):
     if retries == 0:
