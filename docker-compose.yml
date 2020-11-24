@@ -13,7 +13,7 @@ services:
     volumes:
         - ./microservices/restaurant_microservice:/app
     restart: unless-stopped
-    command: sh -c 'cd /app && pip install -r requirements.txt && $$(celery -A notification_microservice.background worker --loglevel=INFO -B >>/var/log/celery.logs 2>&1 &) && flask run'
+    command: sh -c 'cd /app && pip install -r requirements.txt && $$(celery -A restaurant_microservice.background worker --loglevel=INFO -B >>/var/log/celery.logs 2>&1 &) && flask run'
   notification:
     build: ./microservices/notification_microservice
     container_name: notification-gooutsafe
@@ -40,7 +40,7 @@ services:
       - FLASK_APP=./user_microservice/app.py
     env_file:
       - "${DEPLOY_MODE}.env"
-    command: sh -c 'cd /app && pip install -r requirements.txt && flask run'
+    command: sh -c 'cd /app && pip install -r requirements.txt && $$(celery -A user_microservice.background worker --loglevel=INFO -B >>/var/log/celery.logs 2>&1 &) && flask run'
     restart: unless-stopped
   reservation:
     build: ./microservices/reservation_microservice
