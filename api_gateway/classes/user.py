@@ -12,6 +12,16 @@ def try_fromisoformat(iso):
             pass
     return None
 
+def edit_user_data(user, form):
+    u = User.get(id=user)
+    if form.password is not None and form.password.data != '':
+        u.password = (str(form.password.data))
+    if form.email.data != u.email:
+        u.email = form.email.data
+    if form.phone.data != u.phone:
+        u.phone = form.phone.data
+    u.submit()
+
 
 @dataclass(eq=False, order=False)
 class User:

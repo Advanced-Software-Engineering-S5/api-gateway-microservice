@@ -2,7 +2,7 @@ from api_gateway.views.auth import login
 from datetime import datetime
 from api_gateway.classes.restaurant import Restaurant
 from api_gateway.classes.exceptions import GoOutSafeError, FormValidationError
-from api_gateway.classes.user import User
+from api_gateway.classes.user import User, edit_user_data
 from flask import Blueprint, redirect, render_template, request, current_app
 from api_gateway.auth import current_user, login_required
 from api_gateway.forms import OperatorForm, UserForm, UserProfileEditForm
@@ -22,6 +22,8 @@ def create_user():
     form = UserForm()
     if request.method == 'POST':
         try:
+            if not form.validate_on_submit:
+                raise FormValidationError("Can't validate the form")
             dateofbirth = datetime(form.dateofbirth.data.year, form.dateofbirth.data.month, form.dateofbirth.data.day)
             id = User.create(email=form.email.data, \
                 firstname=form.firstname.data, lastname=form.lastname.data, \
@@ -42,6 +44,8 @@ def create_operator():
     form = OperatorForm()
     if request.method == 'POST':
         try:
+            if not form.validate_on_submit:
+                raise FormValidationError("Can't validate the form")
             dateofbirth = datetime(form.dateofbirth.data.year, form.dateofbirth.data.month, form.dateofbirth.data.day)
             u = Restaurant.create(form.email.data, \
                 form.firstname.data, form.lastname.data, \
@@ -64,10 +68,12 @@ def edit_user(user_id):
     if current_user.id != int(user_id):
         return render_template("error.html", error_message="You aren't supposed to be here!")
 
-    form = UserProfileEditForm(obj=current_user)
+    form = UserProfileEditForm(obj=User.get(id=int(user_id)))
     if request.method == 'POST':
         try:
-            # edit_user_data(form, user_id)
+            if not form.validate_on_submit:
+                raise FormValidationError("Can't validate the form")
+            edit_user_data(int(user_id), form)
             return redirect('/users/edit/' + user_id)
         except GoOutSafeError:
             return render_template("useredit.html", form=form)

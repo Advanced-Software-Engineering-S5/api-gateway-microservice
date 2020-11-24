@@ -16,7 +16,6 @@
     .star {
       color: goldenrod;
       font-size: 2.0rem;
-      padding: 0 1rem;
       /* space out the stars */
     }
 
@@ -49,20 +48,25 @@
 {% endblock%}
 
 {% block content %}
-  <h1>{{record.name}}</h1>
-  <h2>Phone: {{ record.phone }}</h2>
+  <div class="container">
+  <div class="row align-items-end pl-3 pr-3">
+    <h1>{{record.name}}</h1>
+  </div>
+  <div class="row align-items-end pl-3 pr-3 mb-5">
+    <h5 class="fas fa-phone mr-1"></h5><h6 class="text-secondary">{{ record.phone }}</h6>
+    <h5 class="fas fa-star mr-1 ml-2"></h5><h6 class="text-secondary">{{record.avg_stars}} ({{record.num_reviews}} reviews)</h6>
+  </div>
   {% if record.extra_info %}
-  <h3>Info: {{ record.extra_info }}</h3>
+  <p>Info: {{ record.extra_info }}</p>
   {% endif %}
   {% if current_user and current_user.is_authenticated %}
-  <h4><a href='/restaurants/reserve/{{ record.id }}'>Book a table!</a></h4>
+  <h4 style="margin-left: auto"><a class="btn btn-primary pr-5 pl-5"href='/restaurants/reserve/{{ record.id }}'>Book a table!</a></h4>
   {% else %}
   <h4><a href='/login'>Login</a> or <a href="/create_user">register</a> to book table!</a></h4>
   {% endif %}
-  <p>Average Rating: {{record.avg_stars}} ({{record.num_reviews}} reviews)</p>
   <br>
-  <ul>
-    <div id="mapid" style="width: 600px; height: 300px;"></div>
+  <ul class="pl-0">
+    <div id="mapid" style="width: 100%; height: 24rem;"></div>
     <script>
 
       var map = L.map('mapid').setView([51.505, -0.09], 2);
@@ -87,6 +91,7 @@
     </script>
 
     {% if current_user and current_user.is_authenticated and form is defined %}
+    <div class="border-top mt-4 w-100"><h2 class="text-secondary">Review</h2></div>
     <br>
     <div class="stars" data-rating="0">
       <span class="star">&nbsp;</span>
@@ -147,7 +152,7 @@
       {% for error in form.review.errors %}
       <span style="color: red;">[{{ error }}]</span>
       {% endfor %}
-      <button type="submit" class="btn btn-primary pr-4 pl-4">Submit</button>
+      <button type="submit" class="btn btn-primary pr-5 pl-5">Submit</button>
     </form>
     {% elif current_user and current_user.is_authenticated and current_user.restaurant_id is none %}
     <br>
@@ -157,4 +162,5 @@
     <p><a href='/login'>Login</a> to insert a review!</p>
     {% endif %}
   </ul>
+  </div>
 {% endblock%}
