@@ -1,8 +1,8 @@
-import requests, json, os
+import json, os
 from dataclasses import dataclass, field, fields
 from datetime import datetime
 from typing import Optional
-
+from .utils import *
 
 def try_fromisoformat(iso):
     if type(iso) == str:
@@ -61,7 +61,7 @@ class User:
             usr = User.get(id=1)
             usr = User.get(email='op@op.com')
         """
-        req = requests.get(f"{User.BASE_URL}/user",
+        req = safe_get(f"{User.BASE_URL}/user",
                            params={
                                'id': id,
                                'email': email,
@@ -94,7 +94,7 @@ class User:
         for field in fields(self):
             attr = getattr(self, field.name)
             if field.init and attr != self.invariant[field.name]:
-                req = requests.post(f"{User.BASE_URL}/user/{self.id}/{field.name}",
+                req = safe_post(f"{User.BASE_URL}/user/{self.id}/{field.name}",
                                     json=attr.isoformat() if type(attr) == datetime else attr)
                 if req.status_code == 200:
                     self.invariant[field.name] = attr
@@ -128,7 +128,7 @@ class User:
             'restaurant_id': restaurant_id
         }
 
-        req = requests.post(f"{User.BASE_URL}/user", json=user_dict)
+        req = safe_post(f"{User.BASE_URL}/user", json=user_dict)
         if req.status_code == 201:
             return req.json()
         else:
@@ -139,7 +139,7 @@ class User:
         """
         Returns a list of all the users
         """
-        req = requests.get(f"{User.BASE_URL}/users")
+        req = safe_get(f"{User.BASE_URL}/users")
         if req.status_code == 200:
             lst = list()
             for user_json in req.json():
@@ -166,7 +166,7 @@ class User:
             User.filter("and_(User.id > 3, User.id < 6)")
             User.filter("and_(User.dateofbirth > '2020-11-18T20:54:25.509863', User.dateofbirth < '2020-11-18T20:54:25.509881')")
         """
-        req = requests.get(f"{User.BASE_URL}/users/filter", params=dict(filter=str))
+        req = safe_get(f"{User.BASE_URL}/users/filter", params=dict(filter=str))
         if req.status_code == 200:
             lst = list()
             for user_json in req.json():
