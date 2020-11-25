@@ -4,7 +4,8 @@ services:
     build: ./microservices/restaurant_microservice
     container_name: restaurant-gooutsafe
     ports:
-      - "5000"
+      - "5030:5000"
+      # - "5000"
     environment:
       - FLASK_APP=./restaurant_microservice/app.py
     env_file:
@@ -17,7 +18,8 @@ services:
     build: ./microservices/notification_microservice
     container_name: notification-gooutsafe
     ports:
-      - "5000"
+      - "5020:5000"
+      # - "5000"
     volumes:
         - ./microservices/notification_microservice:/app
     environment:
@@ -30,7 +32,8 @@ services:
     build: ./microservices/user_microservice
     container_name: user-gooutsafe
     ports:
-      - "5000"
+      - "6070:5000"
+      # - "5000"
     volumes:
         - ./microservices/user_microservice:/app
     environment:
@@ -43,7 +46,8 @@ services:
     build: ./microservices/reservation_microservice
     container_name: reservation-gooutsafe
     ports:
-      - "5000"
+      - "6020:5000"
+      # - "5000"
     volumes:
         - ./microservices/reservation_microservice:/app
     environment:
@@ -54,9 +58,10 @@ services:
     restart: unless-stopped
   api-gateway:
     build: .
-    # container_name: api-gateway-gooutsafe
+    container_name: api-gateway-gooutsafe
     ports:
-      - "5000"
+      - "5000:5000"
+      # - "5000"
     volumes:
         - .:/app
     environment:
@@ -69,7 +74,7 @@ services:
     image: "redis"
     container_name: redis-gooutsafe
     ports:
-      - "6379"
+      - "6379:6379"
     restart: unless-stopped
   nginx: 
     image: nginx:latest
