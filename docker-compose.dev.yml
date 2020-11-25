@@ -37,8 +37,8 @@ services:
       - "6070:5000"
       # - "5000"
     volumes:
-        - ./microservices/user_microservice:/app
-        - CELERY_DB_NUM=2
+      - ./microservices/user_microservice:/app
+      - CELERY_DB_NUM=2
     environment:
       - FLASK_APP=./user_microservice/app.py
     env_file:

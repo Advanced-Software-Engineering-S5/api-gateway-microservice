@@ -154,7 +154,7 @@ class Reservation:
             req = safe_delete(url=url)
             return req.json()['message']
         except Exception as e:
-            'Reservation service not reachable'
+            return 'Reservation service not reachable'
 
     ### OPERATOR RESERVATIONS ###
     
@@ -176,8 +176,10 @@ class Reservation:
     def get_paged_reservations(restaurant_id: int, page: int):
         reservations = []
         url = f'{Reservation.BASE_URL}/reservations/{restaurant_id}?page={page}'
+        print("CALLING", url, reservations, restaurant_id, page)
         try:
             req = safe_get(url=url)
+            print("RES", req, reservations)
             if req.status_code == 200:
                 for res_json in req.json()['reservations']:
                     res = to_reservation(res_json)
