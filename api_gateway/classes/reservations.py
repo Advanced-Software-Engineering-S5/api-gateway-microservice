@@ -129,7 +129,7 @@ class Reservation:
                 return None
         except Exception as e:
             print(e)
-            return 'Reservation service not reachable'    
+            return None   
     
     @staticmethod
     def update_customer_reservation(reservation_id: int, new_reservation_time: datetime, new_seats: int):
