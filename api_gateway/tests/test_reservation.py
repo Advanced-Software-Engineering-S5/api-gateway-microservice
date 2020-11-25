@@ -80,59 +80,59 @@ class TestReservation(unittest.TestCase):
                 self.assertIsNotNone(res_id)
                 self.reservation_ids.append(res_id)
             
-    # def test_get_reservations(self):
-    #     try:
-    #         with self.app.app_context():
+    def test_get_reservations(self):
+        try:
+            with self.app.app_context():
                 
-    #             r = Reservation.get_customer_reservations(1)
-    #             self.assertIsNotNone(r)
+                r = Reservation.get_customer_reservations(1)
+                self.assertIsNotNone(r)
 
-    #             r = Reservation.get_paged_reservations(self.restaurant_id, 1)
-    #             self.assertIsNotNone(r)
+                r = Reservation.get_paged_reservations(self.restaurant_id, 1)
+                self.assertIsNotNone(r)
 
-    #             r = Reservation.get_paged_reservation_of_today(self.restaurant_id, 1)
-    #             self.assertIsNotNone(r)
+                r = Reservation.get_paged_reservation_of_today(self.restaurant_id, 1)
+                self.assertIsNotNone(r)
 
-    #             for res_id in self.reservation_ids:
-    #                 r = Reservation.get_reservation(res_id)
-    #                 self.assertIsNotNone(res_id)
+                for res_id in self.reservation_ids:
+                    r = Reservation.get_reservation(res_id)
+                    self.assertIsNotNone(res_id)
                 
-    #             sc =  Reservation.get_seated_customers(self.restaurant_id)
-    #             self.assertEqual(sc, 0)
+                sc =  Reservation.get_seated_customers(self.restaurant_id)
+                self.assertEqual(sc, 0)
 
-    #             r = Reservation.get_reservation(-1)
-    #             self.assertIsNone(r)
+                r = Reservation.get_reservation(-1)
+                self.assertIsNone(r)
 
-    #             r = Reservation.get_customer_reservations(2)
-    #             self.assertEqual(len(r), 0)
+                r = Reservation.get_customer_reservations(2)
+                self.assertEqual(len(r), 0)
 
-    #             r, _ = Reservation.get_paged_reservation_of_today(1000, 1)
-    #             self.assertEqual(len(r), 0)
+                r, _ = Reservation.get_paged_reservation_of_today(1000, 1)
+                self.assertEqual(len(r), 0)
 
-    #             r, _ = Reservation.get_paged_reservations(1000, 1)
-    #             self.assertEqual(len(r), 0)
-    #     except Exception as e:
-    #         logging.error(e)
-    #         self.fail('failed')
+                r, _ = Reservation.get_paged_reservations(1000, 1)
+                self.assertEqual(len(r), 0)
+        except Exception as e:
+            logging.error(e)
+            self.fail('failed')
 
-    # def test_update(self):
-    #     with self.app.app_context():
-    #         new_res_time = datetime.combine(datetime.today(), time(21, 00))
+    def test_update(self):
+        with self.app.app_context():
+            new_res_time = datetime.combine(datetime.today(), time(21, 00))
 
-    #         for res_id in self.reservation_ids:
-    #             Reservation.update_customer_reservation(res_id, new_res_time, 4)
-    #             Reservation.update_reservation_status(res_id, 2)
+            for res_id in self.reservation_ids:
+                Reservation.update_customer_reservation(res_id, new_res_time, 4)
+                Reservation.update_reservation_status(res_id, 2)
 
-    #             r = Reservation.get_reservation(res_id)
-    #             self.assertIsNotNone(r)
+                r = Reservation.get_reservation(res_id)
+                self.assertIsNotNone(r)
     
-    # def test_delete_customer(self):
-    #     with self.app.app_context():
+    def test_delete_customer(self):
+        with self.app.app_context():
 
-    #         for res_id in self.reservation_ids:
-    #             Reservation.delete_customer_reservation(res_id)
-    #             r = Reservation.get_reservation(res_id)
-    #             self.assertIsNone(r)
+            for res_id in self.reservation_ids:
+                Reservation.delete_customer_reservation(res_id)
+                r = Reservation.get_reservation(res_id)
+                self.assertIsNone(r)
 
 
     

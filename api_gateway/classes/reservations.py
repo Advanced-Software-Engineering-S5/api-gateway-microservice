@@ -98,8 +98,8 @@ class Reservation:
 
         try:
             req = safe_get(url=url)
-            logging.warn(req)
-            logging.warn(req.json())
+            logging.warning(req)
+            logging.warning(req.json())
             if req.status_code == 200:
                 res_json = req.json()['reservation']
                 return to_reservation(res_json)
@@ -167,7 +167,7 @@ class Reservation:
         url = f'{Reservation.BASE_URL}/reservation/{reservation_id}/status'
         try: 
             req = safe_put(url=url, json=body)
-            logging.warn(f'PUT {req}')
+            logging.warning(f'PUT {req}')
             return req.json()['message']
         except:
             return 'Reservation service not reachable'
