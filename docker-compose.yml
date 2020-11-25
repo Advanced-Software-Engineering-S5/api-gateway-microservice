@@ -7,6 +7,7 @@ services:
       - "5000"
     environment:
       - FLASK_APP=./restaurant_microservice/app.py
+      - CELERY_DB_NUM=0
     env_file:
       - "${DEPLOY_MODE}.env"
     volumes:
@@ -22,6 +23,7 @@ services:
         - ./microservices/notification_microservice:/app
     environment:
       - FLASK_APP=./notification_microservice/app.py
+      - CELERY_DB_NUM=1
     env_file:
       - "${DEPLOY_MODE}.env"
     command: sh -c 'cd /app && pip install -r requirements.txt && $$(celery -A notification_microservice.background worker --loglevel=INFO -B >>/var/log/celery.logs 2>&1 &) && flask run'
@@ -35,6 +37,7 @@ services:
         - ./microservices/user_microservice:/app
     environment:
       - FLASK_APP=./user_microservice/app.py
+      - CELERY_DB_NUM=2
     env_file:
       - "${DEPLOY_MODE}.env"
     command: sh -c 'cd /app && pip install -r requirements.txt && $$(celery -A user_microservice.background worker --loglevel=INFO -B >>/var/log/celery.logs 2>&1 &) && flask run'
