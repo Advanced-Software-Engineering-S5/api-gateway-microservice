@@ -73,7 +73,7 @@ class TestLogin(unittest.TestCase):
             'dateofbirth': datetime(year=1996, month=1, day=5)
         }]
 
-        cls.app = create_app('sqlite:///:memory:')
+        cls.app = create_app()
 
         for user in cls.user_list:
             User.create(**user)

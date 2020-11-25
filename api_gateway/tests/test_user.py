@@ -1,9 +1,8 @@
 from api_gateway.classes.user import User, edit_user_data
-from api_gateway.classes.restaurant import Restaurant, Review
-from datetime import date, datetime
+from datetime import datetime
 from api_gateway.app import create_app
-from api_gateway.forms import OperatorForm, RestaurantProfileEditForm, UserForm, UserProfileEditForm
-import unittest, os, random
+from api_gateway.forms import UserProfileEditForm
+import unittest, random
 
 user_data = {'email': str(random.randint(0, 1000)) + '@test.com', 
         'firstname':'Mario', 
@@ -45,3 +44,16 @@ class TestUser(unittest.TestCase):
             self.assertIsNone(u)
             u = User.get(id=-1)
             self.assertIsNone(u)
+
+
+    def test_views(self):
+        test_client = self.app.test_client()
+        test_client.get('/users')
+        test_client.get('/create_user')
+        test_client.get('/create_operator')
+        test_client.get('/users/edit/1')
+        test_client.get('/notifications')
+        test_client.get('/notifications/1')
+        test_client.post('/create_user')
+        test_client.post('/create_operator')
+        test_client.post('/users/edit/1')
