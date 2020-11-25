@@ -26,10 +26,13 @@ def _reserve(restaurant_id):
                 return redirect(request.referrer)
                 
             seats = ReservationForm(request.form).data['seats']
-            mess = Reservation.new(int(current_user.id), int(restaurant_id), reservation_time, seats)
-            print(mess)
-            flash(mess, 'booking')
-            return redirect('/restaurants')
+            id = Reservation.new(int(current_user.id), int(restaurant_id), reservation_time, seats)
+            if (id):
+                flash('Reservation added correctly', 'booking')
+                return redirect('/restaurants')
+            else:
+                flash('Overbooking notification: no table available at the requested time', 'booking')
+                return redirect('/restaurants')
     return render_template('reserve.html', name=restaurant.name, form=form)
 
 @restaurants.route('/restaurants')

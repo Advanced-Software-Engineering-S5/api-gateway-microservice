@@ -124,9 +124,9 @@ class Reservation:
         try:  
             req = safe_post(url=url, json=body)
             if req.status_code == 200:
-                return 'Reservation added correctly'
+                return req.json()['id']
             else:
-                return req.json()['message']
+                return None
         except Exception as e:
             print(e)
             return 'Reservation service not reachable'    
