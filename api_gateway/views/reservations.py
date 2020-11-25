@@ -54,7 +54,7 @@ def show_mark_buttons(reservation: Reservation):
     Returns true iff the mark buttons have to be shown, i.e. if the reservation is atleast accepted and it is past due.
     """
     logging.info(datetime.now())
-    return reservation.status.value > ReservationState.PENDING
+    return reservation.status.value > ReservationState.PENDING and reservation.reservation_time <= datetime.now()
 
 
 @reservations.add_app_template_test
