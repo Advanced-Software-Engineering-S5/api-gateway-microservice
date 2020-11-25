@@ -38,9 +38,9 @@ services:
       # - "5000"
     volumes:
       - ./microservices/user_microservice:/app
-      - CELERY_DB_NUM=2
     environment:
       - FLASK_APP=./user_microservice/app.py
+      - CELERY_DB_NUM=2
     env_file:
       - "${DEPLOY_MODE}.env"
     command: sh -c 'cd /app && pip install -r requirements.txt && $$(celery -A user_microservice.background worker --loglevel=INFO -B >>/var/log/celery.logs 2>&1 &) && flask run'
