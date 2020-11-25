@@ -30,7 +30,6 @@ tables = {
 class TestReservation(unittest.TestCase):
 
     def setUp(self):
-        try:
             self.app = create_app()
             with self.app.test_request_context():
                 form = OperatorForm(**data)
@@ -41,14 +40,12 @@ class TestReservation(unittest.TestCase):
                     form.name.data, form.lat.data, form.lon.data, \
                     form.phone.data, extra_info=form.extra_info.data)
                 print("OPERATOR", self.operator)
-                self.assertIsNotNone(self.operator)
 
                 Restaurant.update(self.operator.restaurant_id, tables)
                 self.restaurant_id = self.operator.restaurant_id
 
                 res_time = datetime.combine(date(datetime.today().year, datetime.today().month, datetime.today().day + 1 % 30 ), time(datetime.now().time().hour + 1 % 24, minute=00))
 
-                self.assertIsNotNone(self.restaurant_id)
                 self.reservations = [{
                     'user_id': 1,
                     'restaurant_id': self.restaurant_id,
@@ -60,10 +57,7 @@ class TestReservation(unittest.TestCase):
                     'reservation_time': datetime.combine(datetime.today(), time(21, 00)),
                     'seats': 4
                 }]
-
                 self.reservation_ids = []     
-        except Exception as e:
-            print("setup failed")
     
     def tearDown(self):
         with self.app.test_request_context():

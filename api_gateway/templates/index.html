@@ -9,14 +9,24 @@ integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0v
 crossorigin=""></script>
 
 <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"> -->
-
+<style>
+ .link {
+  display: inline;
+  background: none!important;
+  border: none;
+  padding: 0!important;
+  /*optional*/
+  /*input has OS specific font-family*/
+  cursor: pointer;
+}
+</style>
 {% endblock %}
 {% block content %}
 <div class="container">
 
 <h1>GoOutSafe</h1>
 {% if current_user and current_user.is_authenticated %}
-  Hi {{ current_user.firstname }}! <a href="/logout">Logout</a><br>
+  Hi {{ current_user.firstname }}! <form style="display: inline" action="{{ url_for('auth.logout') }}" method="POST"><button class="link text-primary" type="submit">Logout</button></form><br>
   {% if current_user.restaurant_id %}
     <p>click <a href="{{ url_for('reservations.home') }}">here</a> to check your restaurant's reservations</p>
     <p>click <a href="{{ url_for('reservations.today') }}">here</a> to check today's reservations</p>
@@ -62,8 +72,7 @@ crossorigin=""></script>
 {% endif %}
 
 {% else %}
-  Hi Anonymous, <a href="/login">Log in</a> or <a href="/create_user">Sign up</a>!<br>
-  Do you have a restaurant? <a href="/create_operator">Register it</a>, is free!
+  Hi Anonymous, <a href="/login">Log in</a> or <a href="/signup">Sign up</a>!<br>
 {% endif %}
     
   </div>

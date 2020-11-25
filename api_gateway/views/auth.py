@@ -18,7 +18,7 @@ def login():
     # TODO: Must work with login form
     form = LoginForm()
     # Ugliest and unsafe hack
-    validate = True if not form.data['csrf_token'] else form.validate
+    validate = True if not form.data['csrf_token'] else form.validate()
     if request.method == 'POST' and validate:
         email, password = form.data['email'], form.data['password']
         jwt_token = requests.post(f"{User.BASE_URL}/user/auth", json=dict(email=email, password=password))
@@ -56,7 +56,7 @@ def delete(id):
     User.delete(current_user.id)
     return redirect('/login')
 
-@auth.route('/logout')
+@auth.route('/logout', methods=["POST"])
 def logout():
     # TODO: Add cookie removal and remove from currently_logged_in.
     response = make_response()

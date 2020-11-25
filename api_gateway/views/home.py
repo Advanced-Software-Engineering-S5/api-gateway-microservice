@@ -14,7 +14,7 @@ def index():
     notifs = []
     if current_user is not None and hasattr(current_user, 'id'):
         if hasattr(current_user, 'is_admin') and current_user.is_admin == True:
-            return render_template("/authority")
+            return redirect("/authority")
         restaurants = Restaurant.getAll()
         notifs = fetch_notifications(current_user, unread_only=True)
     return render_template("index.html", restaurants=restaurants, notifications=notifs)

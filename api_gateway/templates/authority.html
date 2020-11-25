@@ -1,8 +1,21 @@
 {% extends "base.html" %}
+{% block head %}
+<style>
+    .link {
+     display: inline;
+     background: none!important;
+     border: none;
+     padding: 0!important;
+     /*optional*/
+     /*input has OS specific font-family*/
+     cursor: pointer;
+   }
+</style>
+{% endblock %}
 {% block content %}
     <h1>Authority panel</h1>
 
-    Hi Authority! <a href="/logout">Logout</a><br>
+    Hi Authority! <form style="display: inline" action="{{ url_for('auth.logout') }}" method="POST"><button class="link text-primary" type="submit">Logout</button></form><br>
     <a href="/authority/search_user">Search</a> for a user<br>
 
 {% endblock %}
