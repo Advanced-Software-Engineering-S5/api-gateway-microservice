@@ -3,7 +3,23 @@
 <div class="col-auto offset-2 pl-0" style="margin-left: 2rem; margin-right: 2rem">
   <h1 class="mb-3">Reservations</h1>
   <h5 class="mb-5">There are {{customers}} seated customers right now</h5>
+  {% with messages = get_flashed_messages(category_filter=['status_update']) %}
+    {% if messages %}
+      {% for message in messages %}
+          <p class=flashes><h3>{{ message }}</h3></p>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
   <div class="row justify-content-start ml-auto ">
+  {% with messages = get_flashed_messages(category_filter=['reservation_mod']) %}
+            {% if messages %}
+                {% for message in messages %}
+                    <p class=flashes><h3>{{ message }}</h3></p>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
 
 
     {% for reservation in reservations: %}
@@ -12,7 +28,7 @@
         <h5 class="card-header text-center">Reservation for {{reservation.reservation_time|prettytime}}</h5>
         <div class="card-body">
           <ul class="list-group list-group-flush">
-            <li class="list-group-item">Booked by {{reservation.user.firstname}} {{reservation.user.lastname}}</li>
+            <li class="list-group-item">Booked by {{reservation.user_id}}</li>
             <li class="list-group-item">Current status: {{ reservation.status }}</li>
             <li class="list-group-item">Table: {{reservation.table_no}}</li>
             <li class="list-group-item">Seats: {{reservation.seats}}</li>
