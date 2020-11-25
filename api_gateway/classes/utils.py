@@ -9,9 +9,9 @@ def safe_get(url: str, retries=RETRIES, params=None):
     if retries == 0:
         raise TimeoutError
     try:
-        return requests.get(url, timeout=TIMEOUT_SECS, params=None)
+        return requests.get(url, timeout=TIMEOUT_SECS, params=params)
     except Timeout as e:
-        return safe_get(url, retries-1, params=None)
+        return safe_get(url, retries-1, params=params)
 
 def safe_post(url: str, json: dict, retries=RETRIES):
     if retries == 0:
