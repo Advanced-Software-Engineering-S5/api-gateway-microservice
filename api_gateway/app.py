@@ -9,7 +9,7 @@ db_session = None
 
 logging.basicConfig(level=logging.INFO)
 
-def create_app(dbfile='sqlite:///notification_gooutsafe.db'):
+def create_app():
     # db_session = database.init_db('sqlite:///restaurant.db')
     app = Flask(__name__)
     # app.add_api('swagger.yml')
@@ -23,20 +23,14 @@ def create_app(dbfile='sqlite:///notification_gooutsafe.db'):
     app.config['JWT_ACCESS_COOKIE_NAME'] = 'gooutsafe_jwt_token'
     app.config['JWT_COOKIE_CSRF_PROTECT'] = False
     app.config['JWT_CSRF_IN_COOKIES'] = False
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = False
     app.secret_key = b'a#very#fantastic#secretkey'
-    # app.config['SQLALCHEMY_DATABASE_URI'] = dbfile
-    # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    # # celery config
-    # app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379'
-    # app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379'
+    
+
     for bp in blueprints:
         app.register_blueprint(bp)
         bp.app = app
-    # db.init_app(app)
-    # db.create_all(app=app)
 
-    # set the WSGI application callable to allow using uWSGI:
-    # uwsgi --http :8080 -w app
     return app
 
 

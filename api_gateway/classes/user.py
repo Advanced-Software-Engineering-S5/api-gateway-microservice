@@ -1,8 +1,9 @@
-import json, os
+import os
 from dataclasses import dataclass, field, fields
 from datetime import datetime
 from typing import Optional
 from .utils import *
+from api_gateway.classes.exceptions import *
 
 def try_fromisoformat(iso):
     if type(iso) == str:
@@ -182,3 +183,9 @@ class User:
             return lst
         else:
             return None
+
+    @staticmethod
+    def delete(id : int):
+        req = safe_delete(f"{User.BASE_URL}/users/{id}")
+        if req.status_code != 200:
+            raise GoOutSafeError(str(req))
