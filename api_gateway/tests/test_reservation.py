@@ -10,7 +10,7 @@ import unittest, os, logging, random
 user_data = {'email': str(random.randint(0, 1000)) + '@test.com', 
         'firstname':'Mario', 
         'lastname':'Rossi', 
-        'dateofbirth': date(1960, 12, 3)}
+        'dateofbirth': datetime(1960, 12, 3)}
 
 clear_password = 'pass'
 
@@ -27,8 +27,6 @@ tables = {
     'table_3': 4
 }
 
-
-
 class TestReservation(unittest.TestCase):
 
     def setUp(self):
@@ -39,16 +37,18 @@ class TestReservation(unittest.TestCase):
                 dateofbirth = datetime(form.dateofbirth.data.year, form.dateofbirth.data.month, form.dateofbirth.data.day)
                 self.operator = Restaurant.create(form.email.data, \
                     form.firstname.data, form.lastname.data, \
-                    'pass', str(dateofbirth), \
+                    'pass', dateofbirth, \
                     form.name.data, form.lat.data, form.lon.data, \
                     form.phone.data, extra_info=form.extra_info.data)
                 print("OPERATOR", self.operator)
+                self.assertIsNotNone(self.operator)
 
                 Restaurant.update(self.operator.restaurant_id, tables)
                 self.restaurant_id = self.operator.restaurant_id
 
                 res_time = datetime.combine(date(datetime.today().year, datetime.today().month, datetime.today().day + 1 % 30 ), time(datetime.now().time().hour + 1 % 24, minute=00))
 
+                self.assertIsNotNone(self.restaurant_id)
                 self.reservations = [{
                     'user_id': 1,
                     'restaurant_id': self.restaurant_id,
@@ -61,23 +61,24 @@ class TestReservation(unittest.TestCase):
                     'seats': 4
                 }]
 
-                self.reservation_ids = []
-
-               
+                self.reservation_ids = []     
         except Exception as e:
             print("setup failed")
     
     def tearDown(self):
-        Restaurant.delete(self.operator.restaurant_id)
-        User.delete(self.operator.id)
-        for res_id in self.reservation_ids:
-            Reservation.delete_customer_reservation(res_id)
+        with self.app.test_request_context():
+            self.assertIsNotNone(self.operator)
+            Restaurant.delete(self.operator.restaurant_id)
+            User.delete(self.operator.id)
+            for res_id in self.reservation_ids:
+                Reservation.delete_customer_reservation(res_id)
 
     def test_create_reservation(self):
-         for res in self.reservations:
-            res_id = Reservation.new(**res)
-            self.assertIsNotNone(res_id)
-            self.reservation_ids.append(res_id)
+        with self.app.test_request_context():
+            for res in self.reservations:
+                res_id = Reservation.new(**res)
+                self.assertIsNotNone(res_id)
+                self.reservation_ids.append(res_id)
             
     # def test_get_reservations(self):
     #     try:
