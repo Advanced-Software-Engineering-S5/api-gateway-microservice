@@ -1,13 +1,11 @@
 from __future__ import annotations
-from os import stat
 from api_gateway.classes.user import User
-
-from sqlalchemy.sql.functions import user
 from api_gateway.classes.exceptions import GoOutSafeError
-import requests, json, os
-from dataclasses import dataclass, field, fields
-from datetime import datetime, time
+import os
+from dataclasses import dataclass, field
+from datetime import time
 from typing import Optional
+from api_gateway.classes.utils import *
 
 
 
@@ -26,6 +24,7 @@ class Restaurant:
 
     BASE_URL = f"http://{os.environ.get('GOS_RESTAURANT')}"
     # BASE_URL = "http://restaurant:5000"
+
 
     id : int
     name : str
@@ -50,7 +49,7 @@ class Restaurant:
             usr = User.get(id=1)
             usr = User.get(email='op@op.com')
         """
-        req = requests.get(f"{Restaurant.BASE_URL}/restaurants")
+        req = safe_get(f"{Restaurant.BASE_URL}/restaurants")
         l = []
         if req.status_code == 200:
             json_dict = req.json()
@@ -62,7 +61,7 @@ class Restaurant:
         return l
 
     @staticmethod
-    def get(id) -> Restaurant:
+    def get(id : int) -> Restaurant:
         """
         Gets an User instance if it is found, otherwise returns None.
         Arguments are all keyword arguments.
@@ -71,7 +70,7 @@ class Restaurant:
             usr = User.get(id=1)
             usr = User.get(email='op@op.com')
         """
-        req = requests.get(f"{Restaurant.BASE_URL}/restaurants/{id}")
+        req = safe_get(f"{Restaurant.BASE_URL}/restaurants/{id}")
         if req.status_code == 200:
             json_dict = req.json()
             convert_json(json_dict)
@@ -103,7 +102,7 @@ class Restaurant:
         if extra_info:
             body['extra_info'] = str(extra_info)
 
-        req = requests.put(f"{Restaurant.BASE_URL}/restaurants/{id}", json=body)
+        req = safe_put(f"{Restaurant.BASE_URL}/restaurants/{id}", json=body)
         if req.status_code != 201:
             raise GoOutSafeError()
 
@@ -113,6 +112,12 @@ class Restaurant:
         self.avg_stars = 1/self.num_reviews * \
             (self.avg_stars * (self.num_reviews-1) + stars_no)
         return self
+
+    @staticmethod
+    def delete(restaurant_id):
+        req = safe_delete(f"{Restaurant.BASE_URL}/restaurants/{restaurant_id}")
+        if req.status_code != 200:
+            raise GoOutSafeError(str(req))
     
     @staticmethod
     def create(email, firstname, lastname, password, dateofbirth, name, lat, lon, phone, extra_info=None):
@@ -124,7 +129,7 @@ class Restaurant:
             'extra_info': str(extra_info)
         }
 
-        req = requests.post(f"{Restaurant.BASE_URL}/restaurants/new", json=body_restaurant)
+        req = safe_post(f"{Restaurant.BASE_URL}/restaurants/new", json=body_restaurant)
         if req.status_code != 201:
             raise Exception(str(req))
         
@@ -140,11 +145,6 @@ class Restaurant:
         return User.get(id=ret)
 
 
-    @staticmethod
-    def delete(restaurant_id):
-        req = requests.delete(f"{Restaurant.BASE_URL}/restaurants/{restaurant_id}")
-        if req.status_code != 200:
-            raise GoOutSafeError()
         
 
 
@@ -165,7 +165,7 @@ class RestaurantTable:
 
     @staticmethod
     def get(restaurant_id):
-        req = requests.get(f"{Restaurant.BASE_URL}/restaurants/tables/{restaurant_id}")
+        req = safe_get(f"{Restaurant.BASE_URL}/restaurants/tables/{restaurant_id}")
 
         l = []
         if req.status_code == 200:
@@ -193,14 +193,14 @@ class Review:
         body = {"reviewer_id":user_id, "stars":stars}
         if text:
             body['text_review'] = text
-        req = requests.post(f"{Restaurant.BASE_URL}/reviews/{restaurant_id}", json=body)
+        req = safe_post(f"{Restaurant.BASE_URL}/reviews/{restaurant_id}", json=body)
         if req.status_code != 201:
             raise GoOutSafeError("DB error")
 
     @staticmethod
     def get(restaurant_id, user_id=None):
         if user_id:
-            req = requests.get(f"{Restaurant.BASE_URL}/reviews/{restaurant_id}?user_id={user_id}")
+            req = safe_get(f"{Restaurant.BASE_URL}/reviews/{restaurant_id}?user_id={user_id}")
             if req.status_code == 200:
                 json_dict = req.json()
                 if not json_dict:
@@ -209,7 +209,7 @@ class Review:
                 r.invariant = json_dict[0]
                 return r
         else:
-            req = requests.get(f"{Restaurant.BASE_URL}/reviews/{restaurant_id}")
+            req = safe_get(f"{Restaurant.BASE_URL}/reviews/{restaurant_id}")
 
         l = []
         if req.status_code == 200:

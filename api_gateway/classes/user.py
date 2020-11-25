@@ -1,3 +1,5 @@
+from api_gateway.classes.exceptions import DatabaseError, GoOutSafeError
+from api_gateway.classes.utils import safe_delete
 import requests, json, os
 from dataclasses import dataclass, field, fields
 from datetime import datetime
@@ -32,6 +34,7 @@ class User:
     """
 
     BASE_URL = f"http://{os.environ.get('GOS_USER')}"
+    # BASE_URL = "http://user:5000"
 
     id: int
     email: str
@@ -182,3 +185,9 @@ class User:
             return lst
         else:
             return None
+
+    @staticmethod
+    def delete(id : int):
+        req = safe_delete(f"{User.BASE_URL}/users/{id}")
+        if req.status_code != 200:
+            raise GoOutSafeError(str(req))

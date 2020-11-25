@@ -1,3 +1,4 @@
+from api_gateway.classes.restaurant import Restaurant
 import os, requests
 from flask.helpers import url_for
 from flask import Blueprint, session, request, make_response, render_template
@@ -49,9 +50,11 @@ def delete(id):
         return render_template("error.html", error_message="You are not supposed to be here")
     if current_user.is_positive:
         return render_template("error.html", error_message="You cannot unregister if marked positive")
-    # logout_user()
-    # delete_user(int(id))
-    return redirect('/')
+    logout()
+    if current_user.restaurant_id:
+        Restaurant.delete(current_user.restaurant_id)
+    User.delete(current_user.id)
+    return redirect('/login')
 
 @auth.route('/logout')
 def logout():
