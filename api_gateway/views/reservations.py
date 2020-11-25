@@ -1,7 +1,8 @@
 from flask import Blueprint, redirect, render_template, request, url_for, flash
 from api_gateway.auth import current_user, login_required, operator_required
 from api_gateway.classes.reservations import Reservation, ReservationState
-from datetime import datetime
+from api_gateway.classes.user import User
+from datetime import datetime, time
 import logging
 
 reservations = Blueprint('reservations', __name__, url_prefix='/reservations')
@@ -53,7 +54,7 @@ def show_mark_buttons(reservation: Reservation):
     Returns true iff the mark buttons have to be shown, i.e. if the reservation is atleast accepted and it is past due.
     """
     logging.info(datetime.now())
-    return reservation.status.value > ReservationState.PENDING and reservation.reservation_time <= datetime.now()
+    return reservation.status.value > ReservationState.PENDING
 
 
 @reservations.add_app_template_test
@@ -73,11 +74,8 @@ def exit_marked(reservation: Reservation):
 
 def update_status(reservation_id: int, status: int, time: datetime = None):
     res = Reservation.get_reservation(reservation_id = int(reservation_id))
-    #logging.info(res)
-    logging.info(res, 'RESTAURANT ', res.restaurant_id, ' CURRENT ', current_user.restaurant_id)
     if (res is not None and res.restaurant_id == current_user.restaurant_id):
          mess = Reservation.update_reservation_status(reservation_id=int(reservation_id), status=status, time=time)
-         logging.warn(mess)
          return mess
     return None
 
@@ -87,11 +85,16 @@ def update_status(reservation_id: int, status: int, time: datetime = None):
 @operator_required
 def home(page: int):
     reservations, more = Reservation.get_paged_reservations(restaurant_id=current_user.restaurant_id, page=page)
+    users = []
+    for reservation in reservations:
+        user = User.get(id=reservation.user_id)
+        users.append(user)
+    res = zip(reservations, users)
     if not reservations and page > 1:
         return "", 404
     else:
         return render_template("reservations.html",
-                               reservations=reservations,
+                               reservations=res,
                                current_page=page,
                                morepages=more,
                                customers=Reservation.get_seated_customers(restaurant_id=current_user.restaurant_id),
@@ -103,11 +106,18 @@ def home(page: int):
 @operator_required
 def today(page: int):
     reservations, more = Reservation.get_paged_reservation_of_today(restaurant_id=current_user.restaurant_id, page=page)
+    users = []
+    for reservation in reservations:
+        user = User.get(id=reservation.user_id)
+        logging.info(user)
+        users.append(user)
+    
+    res = zip(reservations, users)
     if not reservations and page > 1:
         return "", 404
     else:
         return render_template("reservations.html",
-                               reservations=reservations,
+                               reservations=res,
                                current_page=page,
                                morepages=more,
                                customers=Reservation.get_seated_customers(restaurant_id=current_user.restaurant_id),

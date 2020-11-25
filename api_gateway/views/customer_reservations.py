@@ -1,6 +1,8 @@
 from flask import Blueprint, redirect, render_template, request, url_for, flash
 from api_gateway.auth import admin_required, current_user, login_required
 from api_gateway.classes.reservations import Reservation, ReservationState
+from api_gateway.classes.restaurant import Restaurant
+from api_gateway.views.reservations import prettytime, declined_reservation
 # from api_gateway.views.reservations import prettytime
 from api_gateway.forms import ReservationForm
 
@@ -11,28 +13,22 @@ customer_reservations = Blueprint('customer_reservations',
                                   __name__,
                                   url_prefix='/my_reservations')
 
-@customer_reservations.add_app_template_filter
-def prettytime(value: datetime):
-    """
-    Pretty printing of date and time.
-    """
-    return value.strftime("%A %d %B - %H:%M")
-
-@customer_reservations.add_app_template_test
-def declined_reservation(reservation: Reservation):
-    """
-    Returns true iff the reservation has been declined.
-    """
-    return reservation.status is ReservationState.DECLINED
-
-
 @customer_reservations.route('/', methods=('GET', ))
 @login_required
 def get_reservations():
     form = ReservationForm()
     reservations = Reservation.get_customer_reservations(current_user.id)
+    n_of_res = len(reservations)
+    restaurants = []
+
+    for reservation in reservations:
+        restaurant = Restaurant.get(reservation.restaurant_id)
+        restaurants.append(restaurant)
+    
+    res = zip(reservations, restaurants)
+
     return render_template("customer_reservations.html",
-                           reservations=reservations, form=form)
+                           reservations=res, form=form, n_of_res = n_of_res)
 
 
 @customer_reservations.route('/<reservation_id>/update',

@@ -80,12 +80,7 @@ class Reservation:
             if req.status_code == 200:
                 body = req.json()['reservations']
                 for res_json in body:
-                    res_json['reservation_time'] = try_fromisoformat(res_json['reservation_time'])
-                    res_json['entrance_time'] = try_fromisoformat(res_json['entrance_time'])
-                    res_json['exit_time'] = try_fromisoformat(res_json['exit_time'])
-                    res_json['status'] = to_reservationState(res_json['status'])
-                    res = Reservation(**res_json)
-                    res.invariant = res_json
+                    res = to_reservation(res_json)
                     reservations.append(res)
                 return reservations
             else:
@@ -95,6 +90,9 @@ class Reservation:
     
     @staticmethod
     def get_reservation(reservation_id: int):
+        """
+        Returns the reservation specified by the given reservation_id if found, None otherwise
+        """
 
         url = f'{Reservation.BASE_URL}/customer_reservation/{reservation_id}'
 
@@ -104,21 +102,13 @@ class Reservation:
             logging.warn(req.json())
             if req.status_code == 200:
                 res_json = req.json()['reservation']
-                res_json['reservation_time'] = try_fromisoformat(res_json['reservation_time'])
-                res_json['entrance_time'] = try_fromisoformat(res_json['entrance_time'])
-                res_json['exit_time'] = try_fromisoformat(res_json['exit_time'])
-                res_json['status'] = to_reservationState(res_json['status'])
-                res = Reservation(**res_json)
-                res.invariant = res_json
-                return res
+                return to_reservation(res_json)
             else:
                 return None
         except Exception as e:
             logging.error(e)
             return None
                 
-
-
 
     @staticmethod
     def new(user_id: int, restaurant_id: int, reservation_time: datetime, seats: int):
@@ -190,13 +180,7 @@ class Reservation:
             req = safe_get(url=url)
             if req.status_code == 200:
                 for res_json in req.json()['reservations']:
-                    res_json['reservation_time'] = try_fromisoformat(res_json['reservation_time'])
-                    res_json['entrance_time'] = try_fromisoformat(res_json['entrance_time'])
-                    res_json['exit_time'] = try_fromisoformat(res_json['exit_time'])
-                    res_json['status'] = to_reservationState(res_json['status'])
-
-                    res = Reservation(**res_json)
-                    res.invariant = res_json
+                    res = to_reservation(res_json)
                     reservations.append(res)
                 more = len(reservations) > Reservation.PAGE_SIZE
                 reservations.pop() if more else None
@@ -214,13 +198,7 @@ class Reservation:
             req = safe_get(url=url)
             if req.status_code == 200:
                 for res_json in req.json()['reservations']:
-                    res_json['reservation_time'] = try_fromisoformat(res_json['reservation_time'])
-                    res_json['entrance_time'] = try_fromisoformat(res_json['entrance_time'])
-                    res_json['exit_time'] = try_fromisoformat(res_json['exit_time'])
-                    res_json['status'] = to_reservationState(res_json['status'])
-
-                    res = Reservation(**res_json)
-                    res.invariant = res_json
+                    res = to_reservation(res_json)
                     reservations.append(res)
                 more = len(reservations) > Reservation.PAGE_SIZE
                 reservations.pop() if more else None
@@ -232,6 +210,10 @@ class Reservation:
     
     @staticmethod
     def get_seated_customers(restaurant_id: int):
+        """
+        Returns the number of currently seated customers.
+        
+        """
         url = f'{Reservation.BASE_URL}/reservations/{restaurant_id}?seated=True'
         try:
             req = safe_get(url=url)
@@ -242,14 +224,15 @@ class Reservation:
         except Exception as e:
             return 0
 
-    def to_reservation(self, res_json: dict):
-        res_json['reservation_time'] = try_fromisoformat(res_json['reservation_time'])
-        res_json['entrance_time'] = try_fromisoformat(res_json['entrance_time'])
-        res_json['exit_time'] = try_fromisoformat(res_json['exit_time'])
-        res_json['status'] = to_reservationState(res_json['status'])
-        res = Reservation(**res_json)
-        res.invariant = res_json
-        return res            
+def to_reservation(res_json: dict):
+    res_json['reservation_time'] = try_fromisoformat(res_json['reservation_time'])
+    res_json['entrance_time'] = try_fromisoformat(res_json['entrance_time'])
+    res_json['exit_time'] = try_fromisoformat(res_json['exit_time'])
+    res_json['status'] = to_reservationState(res_json['status'])
+    res = Reservation(**res_json)
+    res.invariant = res_json
+    return res 
+
 
                 
 
