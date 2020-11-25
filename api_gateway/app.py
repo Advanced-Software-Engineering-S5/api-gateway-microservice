@@ -23,7 +23,9 @@ def create_app():
     app.config['JWT_ACCESS_COOKIE_NAME'] = 'gooutsafe_jwt_token'
     app.config['JWT_COOKIE_CSRF_PROTECT'] = False
     app.config['JWT_CSRF_IN_COOKIES'] = False
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = False
     app.secret_key = b'a#very#fantastic#secretkey'
+    
 
     for bp in blueprints:
         app.register_blueprint(bp)

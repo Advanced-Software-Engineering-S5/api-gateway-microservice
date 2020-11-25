@@ -23,7 +23,6 @@ class Restaurant:
     """
 
     BASE_URL = f"http://{os.environ.get('GOS_RESTAURANT')}"
-    # BASE_URL = "http://restaurant:5000"
 
 
     id : int
@@ -137,6 +136,7 @@ class Restaurant:
         ret = User.create(email=email, firstname=firstname, \
                 lastname=lastname, password=password, dateofbirth=dateofbirth, \
                 restaurant_id=restaurant_id)
+        logging.warning(f"{ret}")
         if not ret:
             # user creation didn't go well, reverting restaurant db
             Restaurant.delete(restaurant_id)

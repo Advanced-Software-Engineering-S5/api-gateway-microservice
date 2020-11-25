@@ -33,7 +33,6 @@ class User:
     """
 
     BASE_URL = f"http://{os.environ.get('GOS_USER')}"
-    # BASE_URL = "http://user:5000"
 
     id: int
     email: str
