@@ -1,5 +1,5 @@
 from api_gateway.classes.user import User
-from api_gateway.classes.reservations import Reservation, ReservationState
+from api_gateway.classes.reservations import Reservation, ReservationState, try_fromisoformat, to_reservationState
 from api_gateway.classes.restaurant import Restaurant
 from api_gateway.classes.user import User
 from datetime import date, datetime, time
@@ -83,7 +83,10 @@ class TestReservation(unittest.TestCase):
     def test_get_reservations(self):
         try:
             with self.app.app_context():
-                
+                for res in self.reservations:
+                    res_id = Reservation.new(**res)
+                    self.reservation_ids.append(res_id)                
+
                 r = Reservation.get_customer_reservations(1)
                 self.assertIsNotNone(r)
 
@@ -119,6 +122,11 @@ class TestReservation(unittest.TestCase):
         with self.app.app_context():
             new_res_time = datetime.combine(datetime.today(), time(21, 00))
 
+            for res in self.reservations:
+                res_id = Reservation.new(**res)
+                self.assertIsNotNone(res_id)
+                self.reservation_ids.append(res_id)
+
             for res_id in self.reservation_ids:
                 Reservation.update_customer_reservation(res_id, new_res_time, 4)
                 Reservation.update_reservation_status(res_id, 2)
@@ -133,6 +141,18 @@ class TestReservation(unittest.TestCase):
                 Reservation.delete_customer_reservation(res_id)
                 r = Reservation.get_reservation(res_id)
                 self.assertIsNone(r)
+
+    def test_datetime_conversion(self):
+        self.assertIsNotNone(try_fromisoformat(datetime.now().isoformat()))
+        self.assertIsNone(try_fromisoformat("blergh"))
+
+    def test_reservation_state_str(self):
+        for x in ReservationState:
+            print(x)
+    def test_toreservationstate(self):
+        for x in ReservationState:
+            self.assertEquals(x, to_reservationState(str(x)))
+
 
 
     
