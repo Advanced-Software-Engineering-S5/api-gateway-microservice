@@ -6,7 +6,9 @@
   {% with messages = get_flashed_messages(category_filter=['status_update']) %}
     {% if messages %}
       {% for message in messages %}
-          <p class=flashes><h3>{{ message }}</h3></p>
+        <div class="alert my-4 {{ 'alert-danger' if 'You are not allowed to do that' == message else 'alert-success' }}">
+          {{ message }}
+        </div>
       {% endfor %}
       </ul>
     {% endif %}

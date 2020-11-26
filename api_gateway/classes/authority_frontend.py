@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from api_gateway.classes.user import User
-import requests, os
+import requests, os, logging
 from collections import namedtuple
 
 FilterUser = namedtuple("FilterUser", ["email", "phone", "fiscal_code"])
@@ -24,7 +24,7 @@ def mark_user(user_id: int):
         user.submit()
         message = ''
         
-        requests.get(f"http://{os.environ.get('GOS_NOTIFICATION')}/notifications/contact_tracing​​​/{user_id}")
+        requests.get(f"http://{os.environ.get('GOS_NOTIFICATION')}/notifications/contact_tracing/{user_id}")
     else:
         message = 'You\'ve already marked this user as positive!'
 

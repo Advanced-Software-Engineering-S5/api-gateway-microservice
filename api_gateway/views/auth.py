@@ -64,5 +64,6 @@ def logout():
     response.set_cookie("csrf_access_token", "", expires=0)
     response.status_code = 301
     response.location = url_for("home.index")
-    currently_logged_in[str(current_user.id)] = None
+    if current_user.id:
+        currently_logged_in[str(current_user.id)] = None
     return response
