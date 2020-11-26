@@ -8,6 +8,7 @@ services:
     environment:
       - FLASK_APP=./restaurant_microservice/app.py
       - CELERY_DB_NUM=0
+      - TZ=Europe/Rome
     env_file:
       - "${DEPLOY_MODE}.env"
     volumes:
@@ -24,6 +25,7 @@ services:
     environment:
       - FLASK_APP=./notification_microservice/app.py
       - CELERY_DB_NUM=1
+      - TZ=Europe/Rome
     env_file:
       - "${DEPLOY_MODE}.env"
     command: sh -c 'cd /app && pip install -r requirements.txt && $$(celery -A notification_microservice.background worker --loglevel=INFO -B >>/var/log/celery.logs 2>&1 &) && flask run'
@@ -38,6 +40,7 @@ services:
     environment:
       - FLASK_APP=./user_microservice/app.py
       - CELERY_DB_NUM=2
+      - TZ=Europe/Rome
     env_file:
       - "${DEPLOY_MODE}.env"
     command: sh -c 'cd /app && pip install -r requirements.txt && $$(celery -A user_microservice.background worker --loglevel=INFO -B >>/var/log/celery.logs 2>&1 &) && flask run'
@@ -51,6 +54,7 @@ services:
         - ./microservices/reservation_microservice:/app
     environment:
       - FLASK_APP=./reservation_microservice/app.py
+      - TZ=Europe/Rome
     env_file:
       - "${DEPLOY_MODE}.env"
     command: sh -c 'cd /app && pip install -r requirements.txt && flask run'
@@ -64,6 +68,7 @@ services:
         - .:/app
     environment:
       - FLASK_APP=./api_gateway/app.py
+      - TZ=Europe/Rome
     env_file:
       - "${DEPLOY_MODE}.env"
     command: sh -c 'cd /app && pip install -r requirements.txt && flask run'

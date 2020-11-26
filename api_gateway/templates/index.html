@@ -26,7 +26,8 @@ crossorigin=""></script>
 
 <h1>GoOutSafe</h1>
 {% if current_user and current_user.is_authenticated %}
-  Hi {{ current_user.firstname }}! <form style="display: inline" action="{{ url_for('auth.logout') }}" method="POST"><button class="link text-primary" type="submit">Logout</button></form><br>
+Hi {{ current_user.firstname }}! <form style="display: inline" action="{{ url_for('auth.logout') }}"
+method="POST"><button class="link text-primary" type="submit">Logout</button></form><br>
   {% if current_user.restaurant_id %}
     <p>click <a href="{{ url_for('reservations.home') }}">here</a> to check your restaurant's reservations</p>
     <p>click <a href="{{ url_for('reservations.today') }}">here</a> to check today's reservations</p>

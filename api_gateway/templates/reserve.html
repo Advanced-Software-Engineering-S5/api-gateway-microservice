@@ -1,31 +1,43 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Reserving {{name}} </h1> 
-    {% with messages = get_flashed_messages(category_filter=['booking']) %}
-    {% if messages %}
-        {% for message in messages %}
-            <p class=flashes><h3>{{ message }}</h3></p>
-        {% endfor %}
+<div class="row justify-content-center align-items-center">
+  <div class="col-lg-2 d-flex justify-content-center" style="min-width: 27rem">
+    <div class="card w-100 mt-5">
+      <div class="card-body">
+        <h1>Reserving {{name}} </h1>
+        {% with messages = get_flashed_messages(category_filter=['booking']) %}
+          {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-danger">
+              {{ message }}
+            </div>
+          {% endfor %}
         </ul>
-    {% endif %}
-{% endwith %}
-    {% if current_user.is_authenticated %}
-      <form action="" method="POST">
-        {{ form.hidden_tag() }}
-        <dl>
-        {% for field in form.display %}
-        <dt>{{ form[field].label }}</dt>
-        <dd>{{ form[field]() }}</dd>
-          {% if form[field].errors %}
+        {% endif %}
+        {% endwith %}
+        {% if current_user.is_authenticated %}
+        <form class="form-example" action="" method="POST">
+          <div class="form-group">
+            {{ form.hidden_tag() }}
+            <dl>
+              {% for field in form.display %}
+              <dt>{{ form[field].label }}</dt>
+              <dd>{{ form[field](class_="form-control") }}</dd>
+              {% if form[field].errors %}
               {% for e in form[field].errors %}
               <p class="help-block">{{ e }}</p>
               {% endfor %}
-          {% endif %}
-        {% endfor %}
-        </dl>
-        <p>
-        <input type=submit value="Book Table">
-      </form>
-    {% endif %}
+              {% endif %}
+              {% endfor %}
+            </dl>
+            <p></p>
+            <input class="btn btn-primary" type=submit value="Book Table">
+          </div>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

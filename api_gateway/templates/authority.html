@@ -13,9 +13,11 @@
 </style>
 {% endblock %}
 {% block content %}
+<div class="container">
     <h1>Authority panel</h1>
-
+    
     Hi Authority! <form style="display: inline" action="{{ url_for('auth.logout') }}" method="POST"><button class="link text-primary" type="submit">Logout</button></form><br>
     <a href="/authority/search_user">Search</a> for a user<br>
+</div>
 
 {% endblock %}
